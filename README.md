@@ -6,6 +6,7 @@
 | Kyle Alialy    | kjalialy       | kjalialy@myseneca.ca   | kjalialy09@gmail.com  |
 | Bennet Ngan    | bjfngan        | bjfngan@myseneca.ca    | bennet.n@hotmail.com  |
 | Artur Pinheiro | arturcpinheiro | apinheiro3@myseneca.ca | artur_c_p@hotmail.com |
+| Le Minh Pham   | lmpham1        | lmpham1@myseneca.ca    | est2000vn@gmail.com   |
 
 ## Project Idea(s) (to be replaced)
 
