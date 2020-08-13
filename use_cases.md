@@ -90,3 +90,47 @@ A game has a price drop. There is a user in the system that has the game wishlis
 
 ### Postconditions
 After the notification is sent, users will get an email with the game information, previous game price, current price, and amount it has been discounted by.
+
+
+---
+
+
+## Create an Account (done by Artur)
+
+### Actor (User)
+
+Any user
+
+## Pre-conditions
+
+User must have access to the web application and a valid email to create an account.
+
+## Main Flow
+
+1. The User press the "Sign in" button at the top of the screen.
+2. System will display the account creation formulary.
+3. User fills formulary.
+4. System checks for any problem in the formulary.
+5. User submits formulary.
+6. System checks for any duplicate information in the system.
+6. System saves account information in database.
+7. System sends account verification email.
+8. User verifies email by clicking at the email’s link.
+9. System verify user in database and update it.
+
+## Alternate Flow
+
+- If Account name already in use:
+    - The system will inform the user that “Account name already in use.”
+- If Account name length less than 5 or more than 20 characters:
+    - The system will inform the user that “Account length invalid.”
+- If password length less than 8:
+    - The system will inform the user that “Password length invalid.”
+- If email already in use:
+    - The system will inform the user that “Email already in use.”
+- If user does not verify his email in 24 hours:
+    - The system will delete user information from database.
+
+## Postconditions
+
+User's account is created and user is able to login the web application.
