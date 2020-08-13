@@ -11,6 +11,6 @@
 
 Develope a website related to grocery, games purchase, or warehouse. The website would allow for:
 
--Creation of accounts
--Products purchase
--Inventory management
+- Creation of accounts
+- Products purchase
+- Inventory management
