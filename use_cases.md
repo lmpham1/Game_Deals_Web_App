@@ -1,5 +1,36 @@
 # Use Cases
 
+## Search for a particular game (done by Kyle)
+
+### Actor (User)
+
+Any user
+
+### Pre-conditions
+
+User must have access to the web application to search for a particular game in the database
+
+### Main Flow
+
+1. The user clicks on the search bar located in the **Navigation Bar** on the top of the web application or the search bar on the main/home page
+2. The user inputs a string of characters for the desired game
+3. The user clicks on the **Submit** button
+4. The system receives the string and searches through the database
+5. If game(s) found, the system will return a list of games that matches the string
+
+### Alternate Flow
+
+- If no results were found:
+    - The system will inform the user that “No games are found. Please try again.”
+- If the user searches for a game that completely matches a game title:
+    - The system will redirect the user to the game’s main page and display all the important information about the game
+
+### Postconditions
+
+If games are found, the system will return a list of games matching the string and display them on the webpage.
+
+---
+
 ## Add An Item to the Wishlist (done by Minh Pham)
 
 ### Actor
