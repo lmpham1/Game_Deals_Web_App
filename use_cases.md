@@ -133,4 +133,4 @@ User must have access to the web application and a valid email to create an acco
 
 ## Postconditions
 
-User's account is created and user is able to login the web application.
+User's account is created and user is able to login to the web application.
