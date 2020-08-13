@@ -21,13 +21,13 @@ User must have access to the web application to search for a particular game in 
 ### Alternate Flow
 
 - If no results were found:
-    - The system will inform the user that “No games are found. Please try again.”
+    1. The system will inform the user that “No games are found. Please try again.”
 - If the user searches for a game that completely matches a game title:
-    - The system will redirect the user to the game’s main page and display all the important information about the game
+    1. The system will redirect the user to the game’s page and display all the important information about the game
 
 ### Postconditions
 
-If games are found, the system will return a list of games matching the string and display them on the webpage.
+If games are found, the system will return a list of games matching the string and display them on the webpage. Then, the user can click on his/her's desired game and will be redirected to the game's page
 
 
 ---
