@@ -114,22 +114,22 @@ User must have access to the web application and a valid email to create an acco
 5. User submits formulary.
 6. System checks for any duplicate information in the system.
 6. System saves account information in database.
-7. System sends account verification email.
+7. System sends account verification email to user.
 8. User verifies email by clicking at the email’s link.
 9. System verify user in database and update it.
 
 ## Alternate Flow
 
 - If Account name already in use:
-    - The system will inform the user that “Account name already in use.”
+    1. The system will inform the user that “Account name already in use.”
 - If Account name length less than 5 or more than 20 characters:
-    - The system will inform the user that “Account length invalid.”
+    1. The system will inform the user that “Account length invalid.”
 - If password length less than 8:
-    - The system will inform the user that “Password length invalid.”
+    1. The system will inform the user that “Password length invalid.”
 - If email already in use:
-    - The system will inform the user that “Email already in use.”
-- If user does not verify his email in 24 hours:
-    - The system will delete user information from database.
+    1. The system will inform the user that “Email already in use.”
+- If user does not verifies his email in 24 hours:
+    1. The system will delete user's information from database.
 
 ## Postconditions
 
