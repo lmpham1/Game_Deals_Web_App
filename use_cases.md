@@ -66,27 +66,22 @@ The game is added to the user's wishlist and the user is notified of the success
 
 ## Sending Notification for Price Drops (done by Bennet)
 
-### Actor (User)
-User has a wishlisted item (game) in the system.
+### Actor (System)
+The system that checks for price drops.
 
 ### Pre-conditions
-A game has a price drop. There is a user in the system that has the game wishlisted with the price drop that is lower than their notification price.
+A game has a price drop. There is a user in the system that has the game wishlisted with a price drop.
 
 ### Main Flow
-1. The user searches for a game on the website.
-2. The user clicks **Notify Me** button.
-3. The user enters the price notification threshold.
-4. The user clicks **Submit**
-5. The system saves this notification request.
-6. The system sends out an email when the game price is lower than the price notification threshold.
+1. The system periodically checks wishlited games for price changes (twice a day) via API.
+2. If a wishlisted game is one sale, the system groups together users who have wishlisted the game.
+2. The system sends out an email notification containing details of price drop to group of users.
 
 ### Alternate Flows
-- If the user is not logged in:
-  1. After step 3, the unregistered user will enter their email address so it knows where to send notification to.
-- If the user is logged in and has wishlisted items:
-  1. The user clicks on the **Wishlist** button
-  2. The system displays wishlisted games.
-  3. Return to main flow step 2. 
+- If there are no wishlisted games:
+    1. The system does not run price drop checks.
+- If there are no wishlisted games with a price drop:
+    1. The system does not send out price drop notifications.
 
 ### Postconditions
 After the notification is sent, users will get an email with the game information, previous game price, current price, and amount it has been discounted by.
