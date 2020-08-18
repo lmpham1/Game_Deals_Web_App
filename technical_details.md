@@ -1,6 +1,6 @@
 ## Back-End
 
-The website is going to use [Heroku](https://www.heroku.com/), a cloud platform as service, and [MongoDB](https://www.mongodb.com/) as database. It will use [Node.js](https://nodejs.org/en/) to build the application and [Express.js](https://expressjs.com/) as the web framework. Express is a flexible and open source web app framework that helps in handling multiple and different HTTP request, supports multiple templating engines, and it is easy to use. MongoDB is part of the "MEAN" stack, like express, which facilitates their interaction, for example, mongoDB stores its data in JSON format, while express's http routing/managing has a great support for handling JSON middleware.
+The website is going to use [Heroku](https://www.heroku.com/), a cloud platform as service, and [MongoDB](https://www.mongodb.com/) as database. It will use [Node.js](https://nodejs.org/en/) to build the application and [Express.js](https://expressjs.com/) as the web framework. Express is a flexible and open source web app framework that helps in handling multiple and different HTTP request, supports multiple templating engines, and it is easy to use. MongoDB is part of the "MEAN" stack, like express, which facilitates their interaction, as mongoDB stores its data in JSON format, while express's http routing/managing has a great support for handling JSON middleware.
 
 ## Front-End
 
