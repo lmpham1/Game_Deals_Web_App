@@ -1,8 +1,9 @@
-## (September 28h, 2020)
+## (September 30th, 2020)
 
 ### Finish setting up database
 
 * Sucessfully connected API server to MongoDB Atlas database and create the database schema for users.
+* Dropped games schema since we are switching to Cheapshark API
 
 
 ### API Research
