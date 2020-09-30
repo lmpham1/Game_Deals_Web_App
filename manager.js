@@ -156,7 +156,7 @@ module.exports = function() {
 
         userUpdate: function(id, updatedUser){
             return new Promise((resolve, reject)=>{
-                users.findByIdAndUpdate(id, updatedUser, (err, result)=>{
+                users.findByIdAndUpdate(id, updatedUser, {new: true}, (err, result)=>{
                     if (err)
                         reject(err);
                     else

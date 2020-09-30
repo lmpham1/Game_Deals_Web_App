@@ -87,14 +87,15 @@ app.get('/api/user/username/:name', (req, res)=>{
 })
 
 //Update user
-app.put('api/user/:id', (req, res) => {
+app.put('/api/user/:id', (req, res) => {
+  console.log(req.body);
   m.userUpdate(req.params.id, req.body)
   .then(data=> res.status(201).json(data))
   .catch(err=> res.status(500).json({message: err}));
 })
 
 //Delete user
-app.delete('api/user/:id', (req, res) =>{
+app.delete('/api/user/:id', (req, res) =>{
   m.userDelete(req.params.id)
   .then(message => res.status(201).send(message))
   .catch(err => res.status(500).send(err));
