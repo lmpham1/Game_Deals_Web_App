@@ -1,0 +1,26 @@
+{
+  "name": "group_08",
+  "version": "1.0.0",
+  "description": "| Name           | Github         | Email                  | Skype                 |\r | -------------- | -------------- | ---------------------- | --------------------- |\r | Kyle Alialy    | kjalialy       | kjalialy@myseneca.ca   | kjalialy09@gmail.com  |\r | Bennet Ngan    | bjfngan        | bjfngan@myseneca.ca    | bennet.n@hotmail.com  |\r | Artur Pinheiro | arturcpinheiro | apinheiro3@myseneca.ca | artur_c_p@hotmail.com |\r | Le Minh Pham   | lmpham1        | lmpham1@myseneca.ca    | est2000vn@gmail.com   |",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SenecaCollegeBTSProjects/Group_08.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SenecaCollegeBTSProjects/Group_08/issues"
+  },
+  "homepage": "https://github.com/SenecaCollegeBTSProjects/Group_08#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.7"
+  }
+}

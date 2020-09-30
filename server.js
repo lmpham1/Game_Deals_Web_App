@@ -24,10 +24,83 @@ app.get("/", (req, res) => {
 
 
   
-  app.get('/api', (req,res) => {
-    res.send("Test")
+app.get('/api', (req,res) => {
+  let links = [
+    { 
+      method: "GET",
+      link: "/api/users",
+      function: "Get All Users"
+    },
+    {
+      method: "GET",
+      link: "/api/user/id/:id",
+      function: "Get One User By Id"
+    },
+    {
+      method: "GET",
+      link: "/api/user/username/:name",
+      function: "Get One User By Username"
+    },
+    {
+      method: "POST",
+      link: "/api/users",
+      function: "Add New User"
+    },
+    {
+      method: "PUT",
+      link: "/api/user/:id",
+      function: "Update Existing User"
+    },
+    {
+      method: "DELETE",
+      link: "/api/user/:id",
+      function: "Delete User"
+    }
+  ]
+  res.json(links);
 })
 
+
+/**************************
+ * Users related requests *
+ **************************/
+
+// Get all users
+app.get('/api/users', (req, res) =>{
+  m.userGetAll()
+  .then(data => res.status(200).json(data))
+  .catch(err => res.status(500).json({message: err}));
+})
+
+//Get user by _id
+app.get('/api/user/id/:id', (req, res)=>{
+  m.userGetById(req.params.id)
+  .then(data => res.status(200).json(data))
+  .catch(err => res.status(404).json({message: err}));
+})
+
+//Get user by username
+app.get('/api/user/username/:name', (req, res)=>{
+  m.userGetByUsername(req.params.name)
+  .then(data => res.status(200).json(data))
+  .catch(err=> res.status(500).json({message: err}));
+})
+
+//Update user
+app.put('api/user/:id', (req, res) => {
+  m.userUpdate(req.params.id, req.body)
+  .then(data=> res.status(201).json(data))
+  .catch(err=> res.status(500).json({message: err}));
+})
+
+//Delete user
+app.delete('api/user/:id', (req, res) =>{
+  m.userDelete(req.params.id)
+  .then(message => res.status(201).send(message))
+  .catch(err => res.status(500).send(err));
+})
+
+//Create user
 app.post('/api/users', (req,res) => {
   console.log(req.body);
   m.userAdd(req.body)
@@ -39,6 +112,23 @@ app.post('/api/users', (req,res) => {
   })
 })
 
+/*
+
+//Get all games
+app.get('/api/games', (req, res)=>{
+  m.gameGetAll()
+  .then(data=> res.status(200).json(data))
+  .catch(err => res.status(404).json({message: err}))
+})
+
+//Get a game by name
+app.get('/api/game/name/:name', (req, res)=>{
+  m.gameGetByName(req.params.name)
+  .then(data => res.json(data))
+  .catch(err => res.status(404).json({message: err}));
+})
+
+//Create game
 app.post('/api/games', (req,res) => {
   m.gameAdd(req.body)
   .then((data) => {
@@ -48,6 +138,7 @@ app.post('/api/games', (req,res) => {
   res.status(500).json({ "message": error });
   })
 })
+*/
 
 app.use((req, res) => {
     res.status(404).send("Resource not found");
