@@ -1,5 +1,9 @@
 ## (September 30th, 2020)
 
+### Ecrypting and login completed
+* Ecrypting of password was completed using Bcrypt and then stored on mongoDB.
+* Login session was completed using passportJS.
+
 ### Finish setting up database
 
 * Sucessfully connected API server to MongoDB Atlas database and create the database schema for users.
