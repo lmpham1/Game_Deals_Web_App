@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
+const fetch = require("node-fetch");
 // Or use some other port number that you like better
 
 // Add support for incoming JSON entities
@@ -21,8 +22,6 @@ const m = manager();
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "/index.html"));
   });
-
-
   
 app.get('/api', (req,res) => {
   let links = [
@@ -140,6 +139,36 @@ app.post('/api/games', (req,res) => {
   })
 })
 */
+
+/**************************
+ * Cheapshark API Fetches *
+ **************************/
+
+ //Fetch single game based on gameID
+app.get('/api/game/:gameid', (req, res)=>{
+  var gameUrl = "https://www.cheapshark.com/api/1.0/games?id=" + req.params.gameid;
+  fetch(gameUrl)
+  .then(res => res.json())
+  .then(data => res.json(data))
+  .catch(error => console.log('error', error));
+});
+
+//Fetch game list based on search term
+app.get('/api/search/:searchTerm', (req, res)=>{
+  var searchUrl = "https://www.cheapshark.com/api/1.0/games?title=" + req.params.searchTerm;
+  fetch(searchUrl)
+  .then(res => res.json())
+  .then(data => res.json(data))
+  .catch(error => console.log('error', error));
+})
+
+//Fetch store list (Not sure if we need this)
+app.get('/api/stores', (req, res)=>{
+  fetch('https://www.cheapshark.com/api/1.0/stores')
+  .then(res => res.json())
+  .then(data => res.json(data))
+  .catch(error => console.log('error', error));
+})
 
 app.use((req, res) => {
     res.status(404).send("Resource not found");
