@@ -4,6 +4,8 @@ const path = require("path");
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
+const session = require('express-session');
+const passport = require('passport');
 const HTTP_PORT = process.env.PORT || 8080;
 const fetch = require("node-fetch");
 // Or use some other port number that you like better
@@ -15,6 +17,8 @@ app.use(cors());
 
 const manager = require("./manager.js");
 const m = manager();
+
+m.initizalizePass(passport);
 
 // ################################################################################
 // Deliver the app's home page to browser clients
@@ -58,6 +62,14 @@ app.get('/api', (req,res) => {
   ]
   res.json(links);
 })
+
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 /**************************
@@ -110,6 +122,19 @@ app.post('/api/users', (req,res) => {
   .catch((error) => {
   res.status(500).json({ "message": error });
   })
+})
+
+//login user
+app.post('/api/login', (req, res, next) =>{  
+  passport.authenticate('local' , function(err, user, info){    
+if(err){ return res.json(err);}
+if (!user) { return res.json("No user found")}
+req.logIn(user, function(err){
+  console.log(err + "TIL HEEEEREEEE");
+  if (err) { res.json("Wrong password!" ) ;}
+  return res.json("Logged in successfuly!");
+});
+  })(req, res, next);  
 })
 
 /*
