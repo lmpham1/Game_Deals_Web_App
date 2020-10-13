@@ -28,6 +28,27 @@
   color: #61dafb;
 }
 
+#navbarNav ul li {
+    margin-right: 20px;
+}
+
+#navbarNav ul li login{
+  text-align: right;
+}
+
+h1 {
+  text-align: center;
+}
+
+.active-purple-2 input.form-control[type=text]:focus:not([readonly]) {
+  border-bottom: 1px solid #ce93d8;
+  box-shadow: 0 1px 0 0 #ce93d8;
+}
+.active-purple input.form-control[type=text] {
+  border-bottom: 1px solid #ce93d8;
+  box-shadow: 0 1px 0 0 #ce93d8;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
