@@ -9,7 +9,6 @@ var usersSchema = new Schema({
     lName: String,
     email: {type: String, required: true},
     password: {type: String, required: true},
-    confirmedPassword: {type: String, required: true},
     wishlistedGames: [Games]
 });
 
