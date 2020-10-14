@@ -11,3 +11,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.review {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  flex: 1;
+}
+
+.line {
+  border: none;
+}
+
+.storeImg {
+  width: 8rem;
+}
+
+#dealsTable {
+  width: 65%;
+}
+
+#badge {
+  font-size: small;
+}
