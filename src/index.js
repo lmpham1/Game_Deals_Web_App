@@ -7,7 +7,7 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
-  <BrowserRouter foo="bar">
+  <BrowserRouter>
       <App />
   </BrowserRouter>,
   document.getElementById('root')

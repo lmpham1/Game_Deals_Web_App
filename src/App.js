@@ -1,6 +1,7 @@
 import './App.css';
 import React, { Component } from 'react';
 import { Route, Switch, Link } from "react-router-dom";
+import GameSearch from './GameSearch';
 
 //Routing setup
 class App extends Component {
@@ -30,12 +31,12 @@ class App extends Component {
 const Navbar = () => {
   return (
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="/">Game Deals</a>
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <a className="navbar-brand" href="/">Game Deals</a>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav">
+          <li className="nav-item active">
             <Link to='/'>Home</Link>
           </li>
           <li class="nav-item">
@@ -51,10 +52,10 @@ const Navbar = () => {
       </div>
 
       <div>
-        <ul class="navbar-nav navbar-right">
-          <li class="nav-item">
+        <ul className="navbar-nav navbar-right">
+          <li className="nav-item">
             <Link to='/login'>
-              <button type="button" class="btn btn-success">Login</button>
+              <button type="button" className="btn btn-success">Login</button>
             </Link>
           </li>
         </ul>
@@ -66,14 +67,18 @@ const Navbar = () => {
 
 //Home Component
 const Home = () => {
+
+  var gameName = "";
   return (
 
-    <div class="md-form active-purple active-purple-2 mb-3">
-      <input class="form-control" type="text" placeholder="Search for a game title" aria-label="Search"/>
+    <div className="md-form active-purple active-purple-2 mb-3">
+      <GameSearch></GameSearch>
     </div>
 
   )
 }
+
+
 
 //About component
 const About = () => {
