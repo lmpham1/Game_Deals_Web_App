@@ -3,6 +3,9 @@
 ### Navigation bar and routes set up
 * Created links between routing paths and components
 * Created navigation bar with links and login button
+### Setuo game-details page
+* Display important information about game (release date, cheapest price ever, reviews)
+* Display current deals for the game (sorted by cheapest to most expensive)
 
 ## (September 30th, 2020)
 
