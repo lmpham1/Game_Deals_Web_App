@@ -9,17 +9,12 @@ class App extends Component {
     return (
       <div className="container">
         <Navbar className="navbar navbar-default" />
-        <hr />
 
-        <h1>Find the best game deals</h1>
-
-        <hr />
 
         <Switch>
           <Route exact path='/' render={() => (<Home />)} />
           <Route exact path='/about' render={() => (<About />)} />
           <Route exact path='/login' render={() => (<Login />)} />
-          <Route exact path='/game' render={() => (<Game />)} />
           <Route exact path='/game-detail' render={() => (<GameDetail />)} />
         </Switch>
       </div>
@@ -38,9 +33,6 @@ const Navbar = () => {
         <ul className="navbar-nav">
           <li className="nav-item active">
             <Link to='/'>Home</Link>
-          </li>
-          <li class="nav-item">
-            <Link to='/game'>Game</Link>
           </li>
           <li class="nav-item">
             <Link to='/game-detail'>Game-Detail</Link>
@@ -70,8 +62,11 @@ const Home = () => {
 
   var gameName = "";
   return (
-
+    
     <div className="md-form active-purple active-purple-2 mb-3">
+      <br/>
+      <h1>Game Deals</h1>
+      <br/>
       <GameSearch></GameSearch>
     </div>
 
@@ -83,9 +78,13 @@ const Home = () => {
 //About component
 const About = () => {
   return (
-    <div>
-      <p>This website was created by Group 8</p>
-    </div>
+<div class="about-section">
+  <h1>Created By</h1>
+  <h5>Artur Pinheiro, Bennet Ngan, Kyle Alialy, Minh Pham</h5>
+  <br/>
+  <p>This is a webtool created for the purposes of searching for the cheapest current prices for digital games across multiple storefronts.</p>
+  <p>Created by Gr</p>
+</div>
   )
 }
 
@@ -94,15 +93,6 @@ const Login = () => {
   return (
     <div>
       <p>Login Page</p>
-    </div>
-  )
-}
-
-//Game Component
-const Game = () => {
-  return (
-    <div>
-      <p>Game</p>
     </div>
   )
 }

@@ -49,6 +49,11 @@ h1 {
   box-shadow: 0 1px 0 0 #ce93d8;
 }
 
+.about-section {
+  padding: 50px;
+  text-align: center;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
