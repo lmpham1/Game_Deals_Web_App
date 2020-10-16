@@ -1,5 +1,10 @@
 ## (October 15, 2020)
 
+### Login component message and function working.
+* Authenticate users in login component.
+* Display messages with user credential fails.
+* Create cookie on client browser to user as serialization and deserialization.
+
 ### Navigation bar and routes set up
 * Created links between routing paths and components
 * Created navigation bar with links and login button
