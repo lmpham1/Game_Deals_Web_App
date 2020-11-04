@@ -20,3 +20,9 @@
 * Added get all, get one, create, update, delete operations for the user collection
 * Added associated url in server.js
 * Dropped CRUD operations for the game collection since we are switching to Cheapshark API
+
+## (October 15th, 2020)
+
+### Added search functionality to the front-end
+* A search engine for the games in the database has been implemented
+* Added routes to get list of stores and list of deals from CheapShark API to our API
