@@ -12,6 +12,10 @@
 * Display important information about game (release date, cheapest price ever, reviews)
 * Display current deals for the game (sorted by cheapest to most expensive)
 
+### Added search functionality to the front-end
+* A search engine for the games in the database has been implemented
+* Added routes to get list of stores and list of deals from CheapShark API to our API
+
 ## (September 30th, 2020)
 
 ### Ecrypting and login completed
