@@ -6,6 +6,7 @@ const fs = require('fs');
 const app = express();
 const session = require('express-session');
 const passport = require('passport');
+const cookieParser = require("cookie-parser");
 const HTTP_PORT = process.env.PORT || 8080;
 const fetch = require("node-fetch");
 // Or use some other port number that you like better
@@ -13,7 +14,10 @@ const fetch = require("node-fetch");
 // Add support for incoming JSON entities
 app.use(bodyParser.json());
 // Add support for CORS
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
 
 const manager = require("./manager.js");
 const m = manager();
@@ -68,6 +72,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+app.use(cookieParser("secret"));
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -112,6 +117,28 @@ app.delete('/api/user/:id', (req, res) =>{
   .catch(err => res.status(500).send(err));
 })
 
+app.put('/api/addGame/:id', (req, res) => {
+  console.log("here!")
+  console.log(req.body);
+  m.addGame(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.put('/api/removeGame/:id', (req, res) => {
+  m.removeGame(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
 //Create user
 app.post('/api/users', (req,res) => {
   console.log(req.body);
@@ -124,18 +151,26 @@ app.post('/api/users', (req,res) => {
   })
 })
 
+
 //login user
 app.post('/api/login', (req, res, next) =>{  
   passport.authenticate('local' , function(err, user, info){    
 if(err){ return res.json(err);}
-if (!user) { return res.json("No user found")}
+if (!user) { return res.json("Wrong Credentials")}
 req.logIn(user, function(err){
   console.log(err + "TIL HEEEEREEEE");
-  if (err) { res.json("Wrong password!" ) ;}
-  return res.json("Logged in successfuly!");
+  if (err) { res.json("No matching!") ;}
+  return res.send(user);
 });
   })(req, res, next);  
 })
+
+app.get('/api/logout', (req, res)=>{
+  console.log("here");
+  req.logOut();
+  console.log(res.user);
+  res.send(res.user);
+});
 
 /**************************
  * Cheapshark API Fetches *
@@ -187,6 +222,11 @@ app.get('/api/deal/:id', (req, res)=>{
     res.json(data);
   }).catch(error => console.log('error', error));
 })
+
+app.get('/user', (req, res)=>{
+  res.send(req.user);
+})
+
 
 app.use((req, res) => {
     res.status(404).send("Resource not found");
