@@ -1,3 +1,4 @@
+
 import React, { Component, useState } from "react";
 import { Switch, Route, Link, Redirect, withRouter } from "react-router-dom";
 import $ from 'jquery';
@@ -9,6 +10,7 @@ class NavBar extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            initialState: this.state,
             loggedIn: false,
             loginUsername: "",
             loginPassword: "",
@@ -34,16 +36,15 @@ class NavBar extends React.Component {
                 this.setState({ loggedIn: false });
                 this.setState(this.state);
             }
-            console.log(res.data);
+            console.log(res);
             console.log("loggedIn STATE>>>>>    " + this.state.loggedIn);
+            //On break do this only once and store the value.
         });
     }
 
 
     render() {
-
         const login = () => {
-
             Axios({
                 method: "POST",
                 data: {
@@ -55,8 +56,21 @@ class NavBar extends React.Component {
             }).then((res) => {
                 console.log(res.data)
                 if (res.data.userName) {
-                    this.setState({ data: res.data })
-                    this.props.history.push("/")
+                    console.log(this.props.state)
+
+                    this.setState({ data: res.data });
+                    //this.setState(this.state);
+                    this.setState({ loggedIn: true });
+
+                    this.props.handleLogin();
+                    //this.props.history.push("/");
+                }
+                else {
+                    window.$('#collapseExample').collapse("show")
+                    setTimeout(function () {
+                        window.$('#collapseExample').collapse("hide")
+                    }, 4000);
+
                 }
             });
         };
@@ -67,8 +81,10 @@ class NavBar extends React.Component {
                 withCredentials: true,
                 url: "http://localhost:8080/api/logout",
             }).then((res) => {
+                this.setState({ loginUsername: "" });
                 this.setState({ loggedIn: false });
-                this.forceUpdate();
+                this.props.handleLogout();
+                //this.forceUpdate();
             });
         };
         return (
@@ -92,83 +108,37 @@ class NavBar extends React.Component {
 
                 </div>
                 {this.state.loggedIn == true ?
-                    <Link to='/login'>
-                        <button type="button" onClick={logOut} class="btn btn-success">Logout</button>
-                    </Link>
-                    :
-                    <button type="button" class="btn btn-primary" onClick={() => this.setState({ isOpen: true })} data-toggle="modal" data-target="#exampleModal">
-                        LogIn
-                  </button>
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-
-                                <div>
-                                    <form>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Email address</label>
-                                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                                                placeholder="username" onChange={(e) => this.setState({ loginUsername: e.target.value })}></input>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword1">Password</label>
-                                            <input type="password" class="form-control" id="exampleInputPassword1"
-                                                placeholder="password"
-                                                onChange={(e) => this.setState({ loginPassword: e.target.value })}></input>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" onClick={() => login()} class="btn btn-primary" >Login</button>
-                            </div>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            "Settings"
+                    </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <Link to="/"><button class="dropdown-item" type="button" onClick={logOut} href="#">Logout</button></Link>
+                            <Link to="/wishlist"> <a class="dropdown-item" href="#">Wishlist</a></Link>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <ul class="navbar-nav navbar-right">
-                        <li class="nav-item">
 
-                            {this.state.loggedIn == true ?
-                                <Link to='/login'>
-                                    <button type="button" onClick={logOut} class="btn btn-success">Logout</button>
-                                </Link>
+                    :
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                                placeholder="username" onChange={(e) => this.setState({ loginUsername: e.target.value })}></input>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="exampleInputPassword1"
+                                placeholder="password"
+                                onChange={(e) => this.setState({ loginPassword: e.target.value })}></input>
+                        </div>
+                        <button type="button" onClick={login} class="btn btn-primary" href="#collapseExample">Login</button>
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <p class="text-danger">Wrong Credentials!</p>
 
-                                :
-                                <Link to='/login'>
-                                    <button type="button" class="btn btn-success">Login</button>
-                                </Link>
-                            }
+                            </div>
+                        </div>
+                    </form>
+                }
 
-                        </li>
-                    </ul>
-                </div>
             </nav>
         )
     }

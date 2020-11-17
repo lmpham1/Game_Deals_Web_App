@@ -212,6 +212,8 @@ const DisplayInfo = (props) => {
   }
   else {
     // <span data-toggle = "tooltop" data-placement="right" title="Email notificatio"> <i value={props.gameInfo} onClick={() => Notifs(props.gameInfo)} id = "bell" class="fa fa-bell-slash" aria-hidden="true"></i> </span>
+    console.log("aaaaaaaaa")
+    console.log(props.gameInfo)
     return (
       <div class="row">
         <div class="col-md-8">
@@ -379,6 +381,7 @@ const TableHeader = () => {
 
 const TableBody = (props) => {
   var store;
+  console.log(props)
   const rows = props.deals.map((deal, index) => {
     for (let i = 0; i < props.stores.length; i++) {
       if (deal.storeID === props.stores[i].storeID) {

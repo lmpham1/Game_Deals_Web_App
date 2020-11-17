@@ -11,16 +11,16 @@ const bcrypt = require('bcrypt');
 
 const usersSchema = require('./schema-users');
 const gamesSchema = require('./schema-games');
-module.exports = function() {
+module.exports = function () {
     let users, games;
 
     return {
-        connect: function() {
+        connect: function () {
             return new Promise((resolve, reject) => {
                 console.log("Attempting to connect to the database...");
 
                 // Create connection to the database
-                
+
                 let db = mongoose.createConnection('mongodb+srv://btsCapstone:vYYwHBt2kut6WEaw@btscapstone.ddnpq.mongodb.net/Capstone');
 
                 db.on('error', (error) => {
@@ -37,7 +37,7 @@ module.exports = function() {
             })
         },
 
-        
+
         userAdd: function (newItem) {
             return new Promise(async (resolve, reject) => {
                 console.log(newItem.password)
@@ -48,11 +48,11 @@ module.exports = function() {
                     console.log(salt)
                     console.log(newItem.password)
                 }
-                
+
                 if (bcrypt.compare(newItem.password, test))
-                console.log("encrypt worked")
+                    console.log("encrypt worked")
                 else
-                console.log("encrypt did not work")
+                    console.log("encrypt did not work")
                 users.create(newItem, (error, item) => {
                     if (error) {
                         return reject(error.message);
@@ -62,7 +62,7 @@ module.exports = function() {
                 })
             })
         },
-        
+
         /*,
         // FOR TESTING PURPOSES
         gameAdd: function(newGame) {
@@ -132,7 +132,7 @@ module.exports = function() {
             })
         },
         */
-       
+
         initizalizePass: function (passport) {
             const authenticateUser = async (username, password, done) => {
                 console.log(username)
@@ -143,12 +143,12 @@ module.exports = function() {
                         if (err) {
                             console.log('inside try get user if err' + err)
                             return done(null, false, { message: err });
-                            }
-                            else if (!result) {
-                                console.log('inside try get user user not found')
-                                return done(null, false, { message: "no user found!" });
-                            }
-                            else {
+                        }
+                        else if (!result) {
+                            console.log('inside try get user user not found')
+                            return done(null, false, { message: "no user found!" });
+                        }
+                        else {
                             console.log('inside try get user user found' + result)
                             user = result;
                             if (!user) {
@@ -163,17 +163,17 @@ module.exports = function() {
                                 console.log('inside try bcrypt compare else(wrong pass)')
                                 return done(null, { message: "Wrong password!" });
                             }
-                            
+
                         }
                     })
                 } catch (error) {
                     console.log('inside catch error' + error)
                     return done(null, false, { message: "no user found!" + error });
-                    
+
                 }
             }
             passport.use(new localStrategy({ usernameField: 'userName' }, authenticateUser));
-            
+
             passport.serializeUser((user, done) => {
                 console.log('inside serialization' + user)
                 done(null, user.id)
@@ -186,39 +186,39 @@ module.exports = function() {
                 });
             });
         },
-        
-        userGetAll: function(){
-            return new Promise((resolve, reject)=>{
-                users.find({}, (err, results)=>{
+
+        userGetAll: function () {
+            return new Promise((resolve, reject) => {
+                users.find({}, (err, results) => {
                     if (err)
-                    reject(err);
-                    else if(results.length == 0)
-                    reject("User not found!");
+                        reject(err);
+                    else if (results.length == 0)
+                        reject("User not found!");
                     else
-                    resolve(results);
+                        resolve(results);
                 })
             })
         },
-        
 
-        userGetById: function(userId){
-            return new Promise((resolve, reject)=>{
-                users.findById(userId, (err, result)=>{
+
+        userGetById: function (userId) {
+            return new Promise((resolve, reject) => {
+                users.findById(userId, (err, result) => {
                     if (err)
-                    reject(err);
+                        reject(err);
                     else if (!result)
-                    reject("No user found");
+                        reject("No user found");
                     else resolve(result);
                 })
             })
         },
-        
-        addGame: function(userId, obj) {
+
+        addGame: function (userId, obj) {
             return new Promise((resolve, reject) => {
                 users.findById(userId, (err, result) => {
-                    if (err){ // error in the database
+                    if (err) { // error in the database
                         console.log("error");
-                        reject (err);
+                        reject(err);
                     }
                     else if (!result) { // if no user is found          
                         console.log("No user")
@@ -251,12 +251,12 @@ module.exports = function() {
             })
         },
 
-        removeGame: function(userId, obj) {
+        removeGame: function (userId, obj) {
             return new Promise((resolve, reject) => {
                 users.findById(userId, (err, result) => {
-                    if (err){ // error in the database
+                    if (err) { // error in the database
                         console.log("error");
-                        reject (err);
+                        reject(err);
                     }
                     else if (!result) { // if no user is found          
                         console.log("No user")
@@ -289,9 +289,9 @@ module.exports = function() {
             })
         },
 
-        userGetByUsername: function(username){
-            return new Promise((resolve, reject)=>{
-                users.findOne({userName: username}, (err, result)=>{
+        userGetByUsername: function (username) {
+            return new Promise((resolve, reject) => {
+                users.findOne({ userName: username }, (err, result) => {
                     if (err)
                         reject(err);
                     else if (!result)
@@ -320,9 +320,9 @@ module.exports = function() {
             })
         },
 
-        userDelete: function(id){
-            return new Promise((resolve, reject)=>{
-                users.findByIdAndDelete(id, err=>{
+        userDelete: function (id) {
+            return new Promise((resolve, reject) => {
+                users.findByIdAndDelete(id, err => {
                     if (err)
                         reject(err);
                     else
@@ -330,7 +330,7 @@ module.exports = function() {
                 })
             })
         }
-        
+
     }
 
 }

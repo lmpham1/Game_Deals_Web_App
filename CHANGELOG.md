@@ -1,9 +1,3 @@
-## (October 15, 2020)
-
-### Navigation bar and routes set up
-* Created links between routing paths and components
-* Created navigation bar with links and login button
-
 ## (September 30th, 2020)
 
 ### Ecrypting and login completed
