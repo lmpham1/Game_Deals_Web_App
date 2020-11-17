@@ -1,3 +1,21 @@
+## (October 15, 2020)
+
+### Login component message and function working.
+* Authenticate users in login component.
+* Display messages with user credential fails.
+* Create cookie on client browser to user as serialization and deserialization.
+
+### Navigation bar and routes set up
+* Created links between routing paths and components
+* Created navigation bar with links and login button
+### Setup game-details page
+* Display important information about game (release date, cheapest price ever, reviews)
+* Display current deals for the game (sorted by cheapest to most expensive)
+
+### Added search functionality to the front-end
+* A search engine for the games in the database has been implemented
+* Added routes to get list of stores and list of deals from CheapShark API to our API
+
 ## (September 30th, 2020)
 
 ### Ecrypting and login completed

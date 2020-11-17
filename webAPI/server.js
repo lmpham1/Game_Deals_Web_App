@@ -137,34 +137,6 @@ req.logIn(user, function(err){
   })(req, res, next);  
 })
 
-/*
-
-//Get all games
-app.get('/api/games', (req, res)=>{
-  m.gameGetAll()
-  .then(data=> res.status(200).json(data))
-  .catch(err => res.status(404).json({message: err}))
-})
-
-//Get a game by name
-app.get('/api/game/name/:name', (req, res)=>{
-  m.gameGetByName(req.params.name)
-  .then(data => res.json(data))
-  .catch(err => res.status(404).json({message: err}));
-})
-
-//Create game
-app.post('/api/games', (req,res) => {
-  m.gameAdd(req.body)
-  .then((data) => {
-    res.status(201).json(data);
-  })
-  .catch((error) => {
-  res.status(500).json({ "message": error });
-  })
-})
-*/
-
 /**************************
  * Cheapshark API Fetches *
  **************************/
@@ -193,6 +165,27 @@ app.get('/api/stores', (req, res)=>{
   .then(res => res.json())
   .then(data => res.json(data))
   .catch(error => console.log('error', error));
+})
+
+app.get('/api/store/:id', (req, res)=>{
+  fetch('https://www.cheapshark.com/api/1.0/stores')
+  .then(dat => dat.json())
+  .then(data => {
+    for (var i = 0; i < data.length; ++i){
+      if (data[i].storeID == req.params.id){
+        return res.json(data[i]);
+      }
+    }
+    return res.json({message: "Data Not Found"});
+  }).catch(error => console.log('error', error));
+})
+
+app.get('/api/deal/:id', (req, res)=>{
+  fetch(`https://www.cheapshark.com/api/1.0/deals?id=${req.params.id}`)
+  .then(dat => dat.json())
+  .then(data =>{
+    res.json(data);
+  }).catch(error => console.log('error', error));
 })
 
 app.use((req, res) => {
