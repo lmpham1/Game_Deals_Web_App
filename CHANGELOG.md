@@ -1,3 +1,9 @@
+## (November 18, 2020)
+### Dynamically fetch info and deals for a specific game and add/remove game from user's wishlist
+* Successfully fetched data dynamically
+* Connected get all games component to game details component
+* Created add/remove game from wishlist
+
 ## (October 15, 2020)
 
 ### Login component message and function working.
