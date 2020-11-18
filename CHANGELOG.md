@@ -10,6 +10,12 @@
 * Added on-sale-only filter
 * Added sorting feature but is not working properly
 
+### Implement email alerts for price drop on wishlisted games
+* Added function to create email alerts based on user inputed price in the Wishlist page
+* Added function to delete existing alerts
+* Wishlist page now displays if the user has any active alerts 
+* Users can update their alert threshold for a game by inputting a new price and creating another alert; this overwrites current alert.
+
 ## (October 15, 2020)
 
 ### Login component message and function working.
