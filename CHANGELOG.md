@@ -4,6 +4,12 @@
 * Connected get all games component to game details component
 * Created add/remove game from wishlist
 
+### Enhance game search component
+* Added price filter
+* Added store filter
+* Added on-sale-only filter
+* Added sorting feature but is not working properly
+
 ## (October 15, 2020)
 
 ### Login component message and function working.
