@@ -8,7 +8,7 @@
 * Added price filter
 * Added store filter
 * Added on-sale-only filter
-* Added sorting feature but is not working properly
+* Added sorting features (by game name, sale price, retail price and saved amounts)
 
 ### Implement email alerts for price drop on wishlisted games
 * Added function to create email alerts based on user inputed price in the Wishlist page
