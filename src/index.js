@@ -5,10 +5,18 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
+import { positions, Provider } from "react-alert";
+import AlertMUITemplate from "react-alert-template-mui";
+
+const options = {
+  position: positions.MIDDLE
+};
 
 ReactDOM.render(
   <BrowserRouter>
-      <App />
+      <Provider template={AlertMUITemplate} {...options}>
+        <App />
+      </Provider>
   </BrowserRouter>,
   document.getElementById('root')
 );

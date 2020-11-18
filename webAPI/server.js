@@ -139,6 +139,16 @@ app.put('/api/removeGame/:id', (req, res) => {
   })
 })
 
+app.put('/api/addPrice/:id/:price', (req, res) => {
+  m.addPriceToBeNotified(req.params.id, req.params.price, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
 //Create user
 app.post('/api/users', (req,res) => {
   console.log(req.body);

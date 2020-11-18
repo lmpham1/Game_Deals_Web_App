@@ -1,6 +1,7 @@
 import React, { Component, useState } from "react";
 import { Link } from "react-router-dom";
 import Axios from 'axios';
+//import { useAlert } from 'react-alert';
 import './App.css';
 
 class Wishlist extends React.Component {
@@ -163,30 +164,45 @@ const DisplayWhislist = (props) => {
     }
 }
 
-const createAlert = (props, alertPrice) => {      
-    console.log(props);  
-    fetch("https://www.cheapshark.com/api/1.0/alerts?action=set&email=" + props.email + "&gameID=" + props.wishlist.gameID + "&price=" + alertPrice)
-        .then(response => response.text())
-        .then(result => {
-            if (result) {
-                console.log(result);
+const CreateAlert = (props, alertPrice) => {      
+   console.log(JSON.stringify({gameID: props.wishlist.gameID}));
+   fetch(`https://www.cheapshark.com/api/1.0/alerts?action=set&email=${props.email}&gameID=${props.wishlist.gameID}&price=${alertPrice}`)
+        .then(res => {
+            if (res.ok) {
+                console.log(`http://localhost:8080/api/addPrice/${props.userId}/${alertPrice}`)
+                fetch(`http://localhost:8080/api/addPrice/${props.userId}/${alertPrice}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({gameID: props.wishlist.gameID})
+                }).then(console.log(res))
+                  .catch(error => {console.log(error)});
+                console.log("Alert created");
             }
             else {
-                console.log("Alert creation failed.")
+                console.log("Alert not created")
             }
         })
         .catch(error => console.log('error', error));
 }
 
-const deleteAlert = (props) => {
-    fetch("https://www.cheapshark.com/api/1.0/alerts?action=delete&email=" + props.email + "&gameID=" + props.wishlist.gameID + "&price=")
-        .then(response => response.text())
-        .then(result => {
-            if (result) {
-                console.log(result)
+const DeleteAlert = (props) => {
+    fetch(`https://www.cheapshark.com/api/1.0/alerts?action=delete&email=${props.email}&gameID=${props.wishlist.gameID}`)
+        .then(res => {
+            if (res.ok) {
+                fetch(`http://localhost:8080/api/addPrice/${props.userId}/null`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({gameID: props.wishlist.gameID})
+                }).then(console.log(res))
+                  .catch(error => {console.log(error)});
+                console.log("Alert deleted successfully");
             }
             else {
-                console.log("Could not delete alert")
+                console.log("Alert was not deleted from database")
             }
         })
         .catch(error => console.log('error', error));
@@ -202,7 +218,7 @@ const TableHeader = () => {
                 <th>Current Alert Threshold</th>
                 <th>Notification</th>
                 <th></th>
-                <th></th>
+
                 <th>Remove</th>
             </tr>
         </thead>
@@ -235,21 +251,27 @@ const removeGame = (props, userId) => {
 
 const TableRow = (props) => {
     var img = props.wishlist.thumb;
+    var alertPrice = props.wishlist.priceToBeNotifed;
     return (
+        
         <tr>
             <td><Link to={`/game-detail/${props.wishlist.gameID}`}><img class="storeImg" src={img} alt="Responsive image" width={50} height={50} /></Link></td>
             <td><Link to={`/game-detail/${props.wishlist.gameID}`}>{props.wishlist.name}</Link></td>
             <td>${props.price}</td>
-            <td>
+            {props.wishlist.priceToBeNotifed == "null" ? <td>None</td> :"$" + alertPrice}
+            <td>  
                 <input type="text" class="form-control" id={props.wishlist.gameID} placeholder="Input Alert Price Here... "></input>
             </td>
             <td>
-                <button type="button" class="btn btn-primary" onClick={() => createAlert(props, document.getElementById(props.wishlist.gameID).value)}>
+                <button type="button" class="btn btn-primary" onClick={() => CreateAlert(props, document.getElementById(props.wishlist.gameID).value)}>
                     Create Alert
                 </button>
+                {/* <button type="button" class="btn btn-primary" onClick={() => createAlert(props, document.getElementById(props.wishlist.gameID).value)}>
+                    Update Alert
+                </button> */}
             </td>
             <td>
-                <button type="button" class="btn btn-danger" onClick={() => deleteAlert(props)}>
+                <button type="button" class="btn btn-danger" onClick={() => DeleteAlert(props)}>
                     Delete Alert
                 </button>
             </td>
@@ -258,3 +280,4 @@ const TableRow = (props) => {
     )
 }
 export default Wishlist;
+//export default withAlert()(Wishlist);

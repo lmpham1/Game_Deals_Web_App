@@ -7,6 +7,7 @@ import LoginUser from './loginUser';
 import NavBar from './navBar';
 import Whishlist from './wishlist';
 import Axios from 'axios';
+
 //Routing setup
 class App extends Component {
   constructor(props) {
