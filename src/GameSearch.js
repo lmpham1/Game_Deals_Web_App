@@ -248,9 +248,10 @@ class GameSearch extends React.Component{
     }
 
     handleCloseFilter(){
+        /*
         if (!this.state.saveChangesClicked){
             this.handleResetFilter();
-        }
+        }*/
         this.setState({ showFilter: false });
     }
 
@@ -373,6 +374,7 @@ const Sort = (props) => {
         <div className="form-inline">
             <label>Sort By: </label>
             <select className="form-control ml-2" onChange={handleSortChange}>
+                <option value="0">Best Match</option>
                 <option value="1">Game Name</option>
                 <option value="2">Sale Price</option>
                 <option value="3">Retail Price</option>
@@ -394,7 +396,6 @@ const Filter = (props) => {
     })
 
     const [selected, setSelected] = React.useState(storeOption);
-
     const handleStoreChange = (stores) => {
         //setSelected(e.target.value);
         setSelected(stores);
@@ -415,7 +416,7 @@ const Filter = (props) => {
             </li>
             <li className="form-inline mt-3">
                 <span style={{marginRight: "5px"}} >Stores:</span>
-                <MultiSelect options={storeOption} value={selected} onChange={handleStoreChange} labelledBy={"Stores"} />
+                <MultiSelect options={storeOption} hasSelectAll={"false"} value={selected} onChange={handleStoreChange} labelledBy={"Stores"} />
             </li>
             <li className="form-check-inline mt-3">
                 <label className="form-check-label">On Sale: </label>
@@ -453,8 +454,8 @@ const TableHeader = () =>{
             <tr>
                 <th>Icon</th>
                 <th>Game Title</th>
-                <th>Store</th>
-                <th>Sale Price</th>
+                <th>Cheapest Deal Store</th>
+                <th>Cheapest Sale Price</th>
                 <th>Retail Price</th>
                 <th>Saved Amounts</th>
             </tr>
@@ -581,12 +582,14 @@ const TableRow = (props) =>{
         save = -(props.deal.gameInfo.salePrice - props.deal.gameInfo.retailPrice) / props.deal.gameInfo.retailPrice * 100;
     }
     if (flag){
-        //console.log(deal);
         return(
             <tr>
-                <td><Link to={`/game-detail/${g.gameID}`}><img src={g.thumb} alt={g.internalName} width={50} height={50}/></Link></td>
+                <td><Link to={`/game-detail/${g.gameID}`}><img src={g.thumb} alt={g.internalName} width={40} height={40}/></Link></td>
                 <td><Link to={`/game-detail/${g.gameID}`}>{g.external}</Link></td>
-                <td>{props.store.storeName}</td>
+                <td>
+                    <a href={`https://www.cheapshark.com/redirect?dealID=${g.cheapestDealID}`}>{props.store.storeName}</a>
+
+                </td>
                 <td>{props.deal.gameInfo.salePrice}$</td>
                 <td>{props.deal.gameInfo.retailPrice}$</td>
                 <td>{save.toFixed(2)}% ({-(props.deal.gameInfo.retailPrice - props.deal.gameInfo.salePrice).toFixed(2)}$)</td>
