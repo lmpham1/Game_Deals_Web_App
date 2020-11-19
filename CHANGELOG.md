@@ -1,4 +1,11 @@
 ## (November 18, 2020)
+
+### Create the wishlist page/component.
+* Changed the way login and logout looks.
+* Added the wishlist page.
+* Succesfully show list of games in user's wishlist.
+* Remove item function from Wishlist working.
+
 ### Dynamically fetch info and deals for a specific game and add/remove game from user's wishlist
 * Successfully fetched data dynamically
 * Connected get all games component to game details component
