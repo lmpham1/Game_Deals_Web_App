@@ -21,6 +21,7 @@ class Wishlist {
         this.retailPrice = retailPrice;
         this.releaseDate = releaseDate;
         this.thumb = thumb;
+        this.notifSwitch = false;
 
         if (!priceToBeNotified) {
             this.priceToBeNotifed = null

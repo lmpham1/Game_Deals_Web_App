@@ -5,16 +5,19 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
-import { positions, Provider } from "react-alert";
-import AlertMUITemplate from "react-alert-template-mui";
+import { positions, Provider, transitions } from "react-alert";
+//import AlertMUITemplate from "react-alert-template-mui";
+import AlertTemplate from 'react-alert-template-basic';
 
 const options = {
-  position: positions.MIDDLE
+  position: positions.BOTTOM_CENTER,
+  timeout: 5000,
+  transition: transitions.FADE
 };
 
 ReactDOM.render(
   <BrowserRouter>
-      <Provider template={AlertMUITemplate} {...options}>
+      <Provider template={AlertTemplate} {...options}>
         <App />
       </Provider>
   </BrowserRouter>,
