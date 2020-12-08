@@ -1,3 +1,6 @@
+## (December 8, 2020)
+* Updated the wishlist UI. Replaced create/delete alert buttons with a slider toggle and modal input
+
 ## (November 18, 2020)
 
 ### Create the wishlist page/component.
