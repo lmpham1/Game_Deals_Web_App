@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Axios from 'axios';
 import { withAlert } from 'react-alert';
 import Switch from "react-switch";
+import Toggle from 'react-toggle'
 import './App.css';
 
 class Wishlist extends React.Component {
@@ -28,24 +29,31 @@ class Wishlist extends React.Component {
 
     handleChange(e) {
         this.setState({ alertPrice: e });
-        console.log(this.state.alertPrice);
     }
 
     handleSwitch(checked, gameID, userID, email) {
         console.log(checked);
+        //Updates database
+        fetch(`http://localhost:8080/api/updateNotif/${userID}/${checked}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ gameID: gameID })
+        }).then(res => console.log(res))
+            .catch(error => { console.log(error) });
+
+
         this.setState({ switch: checked });
-        console.log("gameID: " + gameID + " userID: " + userID + " email: " + email);
         
         if (checked == true) {
             var inputPrice = prompt("Enter alert price");
             CreateAlert(gameID, userID, email, inputPrice);
         }
         else {
-            //Call deleteAlert
-
+            DeleteAlert(gameID, userID, email);
             console.log("Switched off!");
         }
-
     }
 
     componentWillReceiveProps(nextProps) {
@@ -75,7 +83,6 @@ class Wishlist extends React.Component {
                                 throw Error(`HTTP ${res.status}, ${res.statusText}`);
                             }
                         }).then(json => {
-                            console.log(json)
                             if (json.deals[0].price) {
                                 tempDeals.push(json.deals[0].price)
                             }
@@ -130,10 +137,10 @@ class Wishlist extends React.Component {
                                 tempDeals.push(0);
                             }
                         })
-                    console.log(tempDeals)
                 }
                 this.setState({ gameDeals: tempDeals })
                 this.setState({ isLoaded: true })
+                console.log(res.data);
             }
             else {
                 this.setState(this.state);
@@ -215,22 +222,22 @@ const CreateAlert = (gameID, userID, email, alertPrice) => {
 }
 
 //Function to delete notification alerts
-const DeleteAlert = (props) => {
-                            fetch(`https://www.cheapshark.com/api/1.0/alerts?action=delete&email=${props.email}&gameID=${props.wishlist.gameID}`)
+const DeleteAlert = (gameID, userID, email) => {
+                            fetch(`https://www.cheapshark.com/api/1.0/alerts?action=delete&email=${email}&gameID=${gameID}`)
                                 .then(res => {
                                     if (res.ok) {
-                                        fetch(`http://localhost:8080/api/addPrice/${props.userId}/null`, {
+                                        fetch(`http://localhost:8080/api/addPrice/${userID}/null`, {
                                             method: 'PUT',
                                             headers: {
                                                 'Content-Type': 'application/json'
                                             },
-                                            body: JSON.stringify({ gameID: props.wishlist.gameID })
+                                            body: JSON.stringify({ gameID: gameID })
                                         }).then(console.log(res))
                                             .catch(error => { console.log(error) });
-                                        props.alert.success("Your alert has been deleted.");
+                                        //props.alert.success("Your alert has been deleted.");
                                     }
                                     else {
-                                        props.alert.error("Error: Alert could not be deleted.");
+                                        //props.alert.error("Error: Alert could not be deleted.");
                                     }
                                 })
                                 .catch(error => console.log('error', error));
@@ -252,7 +259,7 @@ const TableHeader = () => {
 }
 
 const TableBody = (props) => {
-                            console.log(props);
+    //console.log(props);
     const [rrow, setRows] = useState(props.wishlist);
     const removeRow = () =>{
                             let temp = rrow;
@@ -274,48 +281,40 @@ const TableBody = (props) => {
 
                         }
 
-    const rows = rrow.map((item, index) => {
-        var img = item.thumb;
-        var alertPrice = item.priceToBeNotifed;
-
-        //The problem is likely that switch is a local component state which applies to all rows. When I change state for one, it updates for all. Need to update only what I click somehow OR add switch state into
-        //the actual schema so I can save state and load for each game in wishlist. Maybe make a conditional statement where it checks priceToBeNotified is null or not, if null, state is off, if !null, state is on
+    const rows = rrow.map((item, index) => {        
         return (
-            <tr>
-                            <td><Link to={`/game-detail/${item.gameID}`}><img class="storeImg" src={img} alt="Responsive image" width={50} height={50} /></Link></td>
-                            <td><Link to={`/game-detail/${item.gameID}`}>{item.name}</Link></td>
-                            <td>${props.prices[index]}</td>
-                            <td>{alertPrice == null ? "None" : "$" + alertPrice}</td>
-
-                            {/* <td>
-                {alertPrice == null ? <Switch onChange={props.handleSwitch} checked={alertPrice}/> : <Switch onChange={props.handleSwitch} checked={alertPrice}/> }
-            </td> */}
-
-                            <td>
-                                {/* {<Switch onChange={props.handleSwitch} checked={props.switch} gameID={item.gameID} userID={props.userId} email={props.email}/>} */}
-                                {<Switch onChange={() => props.handleSwitch(props.switch, item.gameID, props.userId, props.email)} checked={props.switch}/>}
-                                {/* {<Switch onChange={props.handleSwitch} checked={props.switch}/>} */}
-                            </td>
-
-
-                            {/* <td>
-                <button type="button" class="btn btn-primary" onClick={() => CreateAlert(props, document.getElementById(props.wishlist.gameID))}>
-                    Create Alert
-                </button>
-            </td>
-            <td>
-                <button type="button" class="btn btn-danger" onClick={() => DeleteAlert(props)}>
-                    Delete Alert
-                </button>
-            </td> */}
-                            <td><button type="button" onClick={() => removeGame(item, props.userId)} class="btn btn-danger" href="#collapseExample">Remove from List</button></td>
-                        </tr>
-            )
+            <TableRow handleSwitch={props.handleSwitch} removeGame={removeGame} item={item} index={index} prices={props.prices} userId={props.userId} email={props.email} switch={props.switch}/>
+        )
     })
     return (
         <tbody>
-                            {rows}
-                        </tbody>
+            {rows}
+        </tbody>
+    )
+}
+
+const TableRow = (props) => {
+    console.log(props.item);
+    console.log(props.item.priceToBeNotifed);
+    const[value, setValue] = React.useState(props.item.notifSwitch);
+    const handleSwitch = (newValue, event) => {
+        setValue(newValue);
+        props.handleSwitch(!props.item.notifSwitch, props.item.gameID, props.userId, props.email);
+    }
+
+    return (
+        <tr>
+        <td><Link to={`/game-detail/${props.item.gameID}`}><img class="storeImg" src={props.item.thumb} alt="Responsive image" width={50} height={50} /></Link></td>
+        <td><Link to={`/game-detail/${props.item.gameID}`}>{props.item.name}</Link></td>
+        <td>${props.prices[props.index]}</td>
+        <td>{props.item.priceToBeNotified == null ? "None Set" : "$" + props.item.priceToBeNotified}</td>
+        
+        <td>
+            {<Switch onChange={handleSwitch} checked={value}/>}
+        </td>
+
+        <td><button type="button" onClick={() => props.removeGame(props.item, props.userId)} class="btn btn-danger" href="#collapseExample">Remove from List</button></td>
+    </tr>
     )
 }
 //export default Wishlist;

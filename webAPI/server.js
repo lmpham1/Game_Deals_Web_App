@@ -146,6 +146,17 @@ app.put('/api/addPrice/:id/:price', (req, res) => {
   })
   .catch((error) => {
   res.status(500).json({ "message": error });
+  
+  })
+})
+
+app.put('/api/updateNotif/:id/:state', (req, res) => {
+  m.updateNotif(req.params.id, req.params.state, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
   })
 })
 

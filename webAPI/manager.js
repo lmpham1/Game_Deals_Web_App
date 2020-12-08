@@ -24,10 +24,10 @@ class Wishlist {
         this.notifSwitch = false;
 
         if (!priceToBeNotified) {
-            this.priceToBeNotifed = null
+            this.priceToBeNotified = null;
         }
         else {
-            this.priceToBeNotifed = priceToBeNotified;
+            this.priceToBeNotified = priceToBeNotified;
         }
     }
 }
@@ -289,7 +289,47 @@ module.exports = function() {
                     else {
                         for (let i = 0; i < result.wishlistedGames.length; i++) {
                             if (obj.gameID == result.wishlistedGames[i].gameID) {
-                                result.wishlistedGames[i].priceToBeNotifed = price;
+                                if (price == "" || price == "null"){
+                                    result.wishlistedGames[i].priceToBeNotified = null;
+                                }
+                                else {
+                                    result.wishlistedGames[i].priceToBeNotified = price;
+                                }
+
+                                 price;
+                                users.findByIdAndUpdate(usedId, result, { new: true }, (err, result) => {
+                                    if (err)
+                                        reject(err);
+                                    else
+                                        resolve(result);
+                                })
+                            }
+                        }
+                    }
+                })
+            })
+        },
+
+        updateNotif: function(usedId, state, obj) {
+            return new Promise((resolve, reject) => {
+                users.findById(usedId, (err, result) => {
+                    if (err){ // error in the database
+                        console.log("error");
+                        reject (err);
+                    }
+                    else if (!result) { // if no user is found          
+                        console.log("No user")
+                        reject("No user found");
+                    }
+                    else {
+                        for (let i = 0; i < result.wishlistedGames.length; i++) {
+                            if (obj.gameID == result.wishlistedGames[i].gameID) {
+                                if (state == "false"){
+                                    result.wishlistedGames[i].notifSwitch = false;
+                                }
+                                else{
+                                    result.wishlistedGames[i].notifSwitch = true;
+                                }
                                 users.findByIdAndUpdate(usedId, result, { new: true }, (err, result) => {
                                     if (err)
                                         reject(err);
