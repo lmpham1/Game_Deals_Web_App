@@ -1,15 +1,46 @@
 import './App.css';
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Route, Switch, Link } from "react-router-dom";
 import GameSearch from './GameSearch';
 import GameDetail from './GameDetail';
+import LoginUser from './loginUser';
+import NavBar from './navBar';
+import Whishlist from './wishlist';
+import Axios from 'axios';
 
 //Routing setup
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { loggedIn: false };
+    this.handleLogout = this.handleLogout.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+    //call to check on refresh, like F5
+    Axios({
+      method: "GET",
+      withCredentials: true,
+      url: "http://localhost:8080/user",
+    }).then((res) => {
+      if (res.data._id) {
+        this.setState({ loggedIn: true });
+      }
+      else {
+        this.setState({ loggedIn: false });
+      }
+    });
+  }
+  handleLogout() {
+    this.setState({ loggedIn: false });
+  }
+  handleLogin() {
+    this.setState({ loggedIn: true });
+    console.log(this.state.loggedIn + "LOGGEDIN APP.JA")
+    this.setState(this.state);
+  }
   render() {
     return (
       <div className="container">
-        <Navbar className="navbar navbar-default" />
+        <Navbar className="navbar navbar-default" handleLogin={this.handleLogin} handleLogout={this.handleLogout} state={this.state.loggedIn}></Navbar>
         <hr />
 
         <h1>Find the best game deals</h1>
@@ -19,8 +50,9 @@ class App extends Component {
         <Switch>
           <Route exact path='/' render={() => (<Home />)} />
           <Route exact path='/about' render={() => (<About />)} />
-          <Route exact path='/login' render={() => (<Login />)} />
-          <Route exact path='/game' render={() => (<GameSearch />)} />
+          <Route exact path='/game' render={() => (<Game />)} />
+          <Route exact path='/loginOk' render={() => (<LoginOk />)} />
+          <Route exact path='/wishlist' render={() => (<Whishlist loggedIn={this.state.loggedIn} />)} />
           <Route exact path='/game-detail/:id' render={(props) => (<GameDetail id={props.match.params.id} />)} />
         </Switch>
       </div>
@@ -29,40 +61,12 @@ class App extends Component {
 }
 
 //Navigation bar links
-const Navbar = () => {
+const Navbar = (props) => {
+
   return (
-
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <a className="navbar-brand" href="/">Game Deals</a>
-
-      <div className="collapse navbar-collapse" id="navbarNav">
-        <ul className="navbar-nav">
-          <li className="nav-item active">
-            <Link to='/'>Home</Link>
-          </li>
-          <li class="nav-item">
-            <Link to='/game'>Game</Link>
-          </li>
-          <li class="nav-item">
-            <Link to='/game-detail'>Game-Detail</Link>
-          </li>
-          <li class="nav-item">
-            <Link to='about'>About</Link>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <ul className="navbar-nav navbar-right">
-          <li className="nav-item">
-            <Link to='/login'>
-              <button type="button" className="btn btn-success">Login</button>
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
+    <div>
+      <NavBar handleLogin={props.handleLogin} state={props.state} handleLogout={props.handleLogout}></NavBar>
+    </div>
   )
 }
 
@@ -90,11 +94,26 @@ const About = () => {
 }
 
 //Login Component
-const Login = () => {
+
+
+//Login ok page
+const LoginOk = () => {
   return (
     <div>
-      <p>Login Page</p>
+
+      <LoginUser></LoginUser>
+    </div>
+  )
+
+}
+
+//Game Component
+const Game = () => {
+  return (
+    <div>
+      <p>Game</p>
     </div>
   )
 }
+
 export default App;

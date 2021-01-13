@@ -4,7 +4,6 @@ import Slider from '@material-ui/core/Slider';
 import MultiSelect from "react-multi-select-component";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button'
-//import $ from 'jquery';
 import './App.css';
 
 class GameSearch extends React.Component{
