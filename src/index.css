@@ -26,14 +26,42 @@ code {
   border: none;
 }
 
+.banner {
+  max-height: 420.488px;
+  object-fit: cover;
+}
+
 .storeImg {
   width: 8rem;
 }
 
+.card {
+  max-height: 420.488;
+}
+/*
 #dealsTable {
   width: 65%;
 }
-
+*/
 #badge {
   font-size: small;
+}
+
+.fa-heart-o {
+  color: red;
+  cursor: pointer;
+}
+
+.fa-heart {
+  color: red;
+  cursor: pointer;
+}
+
+.fa-bell-slash {
+  color: black;
+  cursor: pointer;
+}
+.fa-bell-on {
+  color: black;
+  cursor: pointer;
 }

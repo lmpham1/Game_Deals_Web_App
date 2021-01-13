@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {Link, withRouter, Redirect} from "react-router-dom";
-import NumberFormat from 'react-number-format';
+//import NumberFormat from 'react-number-format';
 import './App.css';
 
 class GameSearch extends React.Component{
@@ -195,8 +195,8 @@ const TableRow = (props) =>{
         //console.log(deal);
         return(
             <tr>
-                <td><Link to={`/game/${g.gameID}`}><img src={g.thumb} alt={g.internalName} width={50} height={50}/></Link></td>
-                <td><Link to={`/game/${g.gameID}`}>{g.external}</Link></td>
+                <td><Link to={`/game-detail/${g.gameID}`}><img src={g.thumb} alt={g.internalName} width={50} height={50}/></Link></td>
+                <td><Link to={`/game-detail/${g.gameID}`}>{g.external}</Link></td>
                 <td>{props.store.storeName}</td>
                 <td>{props.deal.gameInfo.salePrice}$</td>
                 <td>{props.deal.gameInfo.retailPrice}$</td>
