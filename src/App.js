@@ -73,7 +73,6 @@ const Navbar = (props) => {
 //Home Component
 const Home = () => {
 
-  var gameName = "";
   return (
 
     <div className="md-form active-purple active-purple-2 mb-3">
