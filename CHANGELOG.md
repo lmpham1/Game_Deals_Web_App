@@ -1,7 +1,10 @@
-## (December 8, 2020)
+## (January 16th, 2021)
+* Successfully added games from CheapShark API to our database
+
+## (December 8th, 2020)
 * Updated the wishlist UI. Replaced create/delete alert buttons with a slider toggle and modal input
 
-## (November 18, 2020)
+## (November 18th, 2020)
 
 ### Create the wishlist page/component.
 * Changed the way login and logout looks.
@@ -26,7 +29,7 @@
 * Wishlist page now displays if the user has any active alerts 
 * Users can update their alert threshold for a game by inputting a new price and creating another alert; this overwrites current alert.
 
-## (October 15, 2020)
+## (October 15th, 2020)
 
 ### Login component message and function working.
 * Authenticate users in login component.
