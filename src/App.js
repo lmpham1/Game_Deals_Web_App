@@ -29,6 +29,61 @@ class App extends Component {
       }
     });
   }
+  componentDidMount() {
+    //this.addToDatabase();
+  }
+
+  /*
+  async addToDatabase(){
+    for(let i = 1521; i >= 0; i++){
+      console.log(i);
+      await fetch(`https://www.cheapshark.com/api/1.0/deals?pageNumber=${i}`).then(response =>{
+        if (response.ok){
+            return response.json();
+        }
+        else if (response.status === 404){
+            throw Error("HTTP 404, Not Found");
+        } else {
+            throw Error(`HTTP ${response.status}, ${response.statusText}`);
+        }
+      }).then(responseData => {
+        if (responseData && responseData.length != 0){
+          responseData.forEach(deal => {
+            deal.external = deal.title;
+            fetch(`http://localhost:8080/api/db/update`, {
+              method: 'PUT',
+              mode: 'cors',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin':'*'
+                },
+              body: JSON.stringify(deal)
+            }).then(response =>{
+              if (response.ok){
+                  return response.json();
+              }
+              else if (response.status === 404){
+                  throw Error("HTTP 404, Not Found");
+              } else {
+                  throw Error(`HTTP ${response.status}, ${response.statusText}`);
+              }
+          })
+          .then(res => {
+              //console.log(res);
+          }).catch(err => console.log(err));
+      
+          });
+        } else {
+          i = -2;
+        }
+      }).catch((err) => {
+        console.log(err);
+        i = -2;
+      })
+    }  
+  }
+  */
+
   handleLogout() {
     this.setState({ loggedIn: false });
   }

@@ -15,7 +15,6 @@ const fetch = require("node-fetch");
 app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors({
-  origin: "http://localhost:3000",
   credentials: true,
 }));
 
@@ -248,6 +247,42 @@ app.get('/user', (req, res)=>{
   res.send(req.user);
 })
 
+/*************************
+ * Our API Game Requests *
+ *************************/
+
+//Add/Update game to the database
+app.put('/api/db/update', (req, res) =>{
+  let game = req.body;
+
+  //look up the game in our database
+  m.gameGetById(game.gameID).then((oldGame) => {
+
+    //if the game exists, only update the game
+    m.gameUpdate(oldGame.gameId, game).then((updatedGame) => {
+      res.json(updatedGame);
+      console.log("Game " + updatedGame.gameId + " updated!")
+    }).catch((error) => console.log(error))     //end of m.gameUpdate()
+
+  }).catch((error) => {
+
+    //if the game does not exist (error == -1), add it to the database
+    if (error === -1){
+      m.gameAdd(game).then((addedGame) => {
+        res.json(addedGame);
+        console.log("Game " + addedGame.gameId + " added!")
+      }).catch((err) => console.log(err));    //end of m.gameAdd()
+    } 
+    else console.log(error);   //other errors
+
+  })  //end of m.gameGetById
+})
+
+//Get all games from our database
+app.get('/api/db/games', (req, res) =>{
+  m.gameGetAll().then(results => res.status(200).json(results))
+  .catch((error) => res.status(500).json(error));
+})
 
 app.use((req, res) => {
     res.status(404).send("Resource not found");
