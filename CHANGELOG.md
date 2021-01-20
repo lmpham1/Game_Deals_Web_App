@@ -1,3 +1,11 @@
+## (January 19th, 2021)
+### Added search history functionality to the web app
+* Write the backend code to push a game to the user's search history stack.
+* Write the backend code to remove a specific game from the search history stack.
+* New GET request in Web API that gets all games in the user's search history
+* Created a route in the web app to show user's search history and the table that includes the game title, the thumbnail, price and date of visit.
+* Added a delete button if users want to delete the game from their search history.
+
 ## (January 16th, 2021)
 * Successfully added games from CheapShark API to our database
 
