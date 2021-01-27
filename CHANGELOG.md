@@ -1,3 +1,9 @@
+## (January 27th, 2021)
+### Added most viewed games functionality to the web app
+* Changed the backend function to update games in the gameAPI to create and increment the view property.
+* Write the backend request handler and function to show top 20 most viewed games.
+* Create the route and component in the frontend application to show the most viewed games in a simple list with picture, title and price.
+
 ## (January 19th, 2021)
 ### Added search history functionality to the web app
 * Write the backend code to push a game to the user's search history stack.
