@@ -62,98 +62,28 @@ module.exports = function() {
         userAdd: function (newItem) {
             return new Promise(async (resolve, reject) => {
                 console.log(newItem.password)
-                if (newItem.password) {
-                    test = newItem.password
-                    salt = await bcrypt.genSalt();
-                    newItem.password = await bcrypt.hash(newItem.password, salt);
-                    console.log(salt)
-                    console.log(newItem.password)
-                }
-                
-                if (bcrypt.compare(newItem.password, test))
-                console.log("encrypt worked")
-                else
-                console.log("encrypt did not work")
-                users.create(newItem, (error, item) => {
-                    if (error) {
-                        return reject(error.message);
-                    }
-                    console.log(newItem.password)
-                    return resolve(item)
-                })
-            })
-        },
-        
-        /*,
-        // FOR TESTING PURPOSES
-        gameAdd: function(newGame) {
-            return new Promise((resolve, reject) => {
-                games.create(newGame, (error, item) => {
-                    if (error) {
-                        return reject(error.message);
+                    if (newItem.password) {
+                        test = newItem.password
+                        salt = await bcrypt.genSalt();
+                        newItem.password = await bcrypt.hash(newItem.password, salt);
+                        console.log(salt)
+                        console.log(newItem.password)
                     }
                     
-                    return resolve(item);
-                })
-            })
-        },
-        
-        
-        gameGetAll: function(){
-            return new Promise((resolve, reject) =>{
-                games.find({}, (error, results) => {
-                    if (error)
-                    reject(err);
-                    else if (results.length == 0)
-                    reject("Fetched failed! The database is empty!");
+                    if (bcrypt.compare(newItem.password, test))
+                    console.log("encrypt worked")
                     else
-                    resolve(results);
-                })
-            })
-        },
-        
-        gameGetById: function(gameId){
-            return new Promise((resolve, reject)=>{
-                games.findById(gameId, (err, result)=>{
-                    if (err)
-                        reject(err);
-                        else if (!result)
-                        reject("Game not found!");
-                        else
-                        resolve(result);
+                    console.log("encrypt did not work")
+                    users.create(newItem, (error, item) => {
+                        if (error) {
+                            return reject(error.message);
+                        }
+                        console.log(newItem.password)
+                        return resolve(item)
                     })
-                })
-            }
-            ,
-            
-            gameGetByName: function(name){
-                return new Promise((resolve, reject)=>{
-                    games.find({
-                        gameName: { "$regex": name, "$option": "i"}
-                    },
-                    (err, results) =>{
-                        if (err)
-                        reject(err);
-                        else if (results.length == 0)
-                        reject("No game found!");
-                    else
-                    resolve(results);
-                })
-            })
+             })
         },
         
-        gameUpdate: function(gameId, updatedGame){
-            return new Promise((resolve, reject)=>{
-                games.findByIdAndUpdate(gameId, updatedGame,(err, result)=>{
-                    if (err)
-                    reject(err);
-                    else
-                    resolve(result);
-                })
-            })
-        },
-        */
-       
         initizalizePass: function (passport) {
             const authenticateUser = async (username, password, done) => {
                 console.log(username)
@@ -217,6 +147,22 @@ module.exports = function() {
                     reject("User not found!");
                     else
                     resolve(results);
+                })
+            })
+        },
+
+        userGetByUsername: function(username){
+            return new Promise((resolve, reject)=>{
+                users.findOne({userName: username}, (err, result)=>{
+                    if (err){
+                        reject(err);
+                    }
+                    else if (!result){
+                        resolve("No user found");
+                    }
+                    else {
+                        resolve("User already exists");
+                    }
                 })
             })
         },
@@ -381,15 +327,18 @@ module.exports = function() {
             })
         },
 
-        userGetByUsername: function(username){
+        userGetByUsername: function(body){
             return new Promise((resolve, reject)=>{
-                users.findOne({userName: username}, (err, result)=>{
+                users.findOne({userName: body.userName}, (err, result)=>{
+                    console.log(result);
                     if (err)
                         reject(err);
-                    else if (!result)
-                        reject("User not found");
-                    else
-                        resolve(result);
+                    else if (result == null){
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
                 })
             })
         },
