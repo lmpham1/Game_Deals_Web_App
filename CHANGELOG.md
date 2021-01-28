@@ -5,7 +5,8 @@
 * Create the route and component in the frontend application to show the most viewed games in a simple list with picture, title and price.
 
 ## (January 19th, 2021)
-### Added search history functionality to the web app
+### Added search history functionality to the web app (author - Kyle Alialy)
+[Issue #19](https://github.com/SenecaCollegeBTSProjects/Group_08/issues/19)
 * Write the backend code to push a game to the user's search history stack.
 * Write the backend code to remove a specific game from the search history stack.
 * New GET request in Web API that gets all games in the user's search history
