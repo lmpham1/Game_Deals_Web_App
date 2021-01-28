@@ -20,7 +20,8 @@
 * Added a delete button if users want to delete the game from their search history.
 
 ## (January 16th, 2021)
-* Successfully added games from CheapShark API to our database
+* Successfully added 36626 games from CheapShark API to our database
+* Added a route to query a game from our database using its CheapShark ID
 
 ## (December 8th, 2020)
 * Updated the wishlist UI. Replaced create/delete alert buttons with a slider toggle and modal input
