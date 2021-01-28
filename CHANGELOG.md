@@ -1,3 +1,9 @@
+## (January 28th, 2021)
+### Added User Registration functionality
+* Created route for user registration page
+* Added front-end validation for form submission
+* Wrote function to check for existing user in database for back-end validation
+
 ## (January 27th, 2021)
 ### Added most viewed games functionality to the web app
 * Changed the backend function to update games in the gameAPI to create and increment the view property.
