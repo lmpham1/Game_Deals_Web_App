@@ -15,6 +15,7 @@ const fetch = require("node-fetch");
 app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors({
+  origin: 'http://localhost:3000',
   credentials: true,
 }));
 
