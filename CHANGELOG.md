@@ -1,7 +1,33 @@
-## (December 8, 2020)
+## (January 28th, 2021)
+### Added User Registration functionality
+* Created route for user registration page
+* Added front-end validation for form submission
+* Wrote function to check for existing user in database for back-end validation
+
+## (January 27th, 2021)
+### Added most viewed games functionality to the web app
+* Changed the backend function to update games in the gameAPI to create and increment the view property.
+* Write the backend request handler and function to show top 20 most viewed games.
+* Create the route and component in the frontend application to show the most viewed games in a simple list with picture, title and price.
+
+## (January 19th, 2021)
+### Added search history functionality to the web app (author - Kyle Alialy)
+[Issue #19](https://github.com/SenecaCollegeBTSProjects/Group_08/issues/19)
+* Write the backend code to push a game to the user's search history stack.
+* Write the backend code to remove a specific game from the search history stack.
+* New GET request in Web API that gets all games in the user's search history
+* Created a route in the web app to show user's search history and the table that includes the game title, the thumbnail, price and date of visit.
+* Added a delete button if users want to delete the game from their search history.
+
+## (January 16th, 2021)
+### Added game info from CheapShark API to our database
+* Successfully added 36626 games from CheapShark API to our database
+* Added a route to query a game from our database using its CheapShark ID
+
+## (December 8th, 2020)
 * Updated the wishlist UI. Replaced create/delete alert buttons with a slider toggle and modal input
 
-## (November 18, 2020)
+## (November 18th, 2020)
 
 ### Create the wishlist page/component.
 * Changed the way login and logout looks.
@@ -26,7 +52,7 @@
 * Wishlist page now displays if the user has any active alerts 
 * Users can update their alert threshold for a game by inputting a new price and creating another alert; this overwrites current alert.
 
-## (October 15, 2020)
+## (October 15th, 2020)
 
 ### Login component message and function working.
 * Authenticate users in login component.

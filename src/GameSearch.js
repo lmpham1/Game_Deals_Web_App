@@ -263,7 +263,10 @@ class GameSearch extends React.Component{
     }
 
     render(){
-        document.title = "Search results for \"" + this.state.search + "\""
+        if (this.state.search != "")
+            document.title = "Search results for \"" + this.state.search.replace('%20', " ") + "\"";
+        else
+            document.title = "Game Deals Search"
 
         let loading;
         if (this.state.isLoading){
@@ -556,7 +559,10 @@ const TableBody = (props) => {
                         }
 
                         if ((deal.gameInfo.salePrice > props.priceRange[0] && deal.gameInfo.salePrice < props.priceRange[1]) && (inFilter || props.storeFilter.length == 0) && (!props.onSale || deal.gameInfo.salePrice < deal.gameInfo.retailPrice))
+                        {   
+                                                                              
                             return (<TableRow game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
+                        }
                     }
                 }
                 break;
@@ -572,8 +578,29 @@ const TableBody = (props) => {
 
 const TableRow = (props) =>{
     const g = props.game;
-    //console.log("gm value");
-    //console.log(gm);
+    //console.log(g);
+    fetch("http://localhost:8080/api/db/update", {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin':'*'
+        },
+        body: JSON.stringify(g)
+    }).then(response =>{
+        if (response.ok){
+            return response.json();
+        }
+        else if (response.status === 404){
+            throw Error("HTTP 404, Not Found");
+        } else {
+            throw Error(`HTTP ${response.status}, ${response.statusText}`);
+        }
+    })
+    .then(res => {
+        //console.log(res);
+    }).catch(err => console.log(err)).catch(err => console.log(err));
+
     let flag = false;
     let save = 0;
     if (props.deal.gameInfo){
@@ -583,7 +610,7 @@ const TableRow = (props) =>{
     if (flag){
         return(
             <tr>
-                <td><Link to={`/game-detail/${g.gameID}`}><img src={g.thumb} alt={g.internalName} width={40} height={40}/></Link></td>
+                <td><Link to={`/game-detail/${g.gameID}`}><img src={g.thumb} width={40} height={40}/></Link></td>
                 <td><Link to={`/game-detail/${g.gameID}`}>{g.external}</Link></td>
                 <td>
                     <a href={`https://www.cheapshark.com/redirect?dealID=${g.cheapestDealID}`}>{props.store.storeName}</a>

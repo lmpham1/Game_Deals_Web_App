@@ -5,6 +5,7 @@ const localStrategy = require('passport-local').Strategy
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 //mongoose.set('useUnifiedTopology', true);
 
 const bcrypt = require('bcrypt');
@@ -51,7 +52,9 @@ module.exports = function() {
 
                 db.once('open', () => {
                     console.log('Connection to the database was successful');
+                    
                     users = db.model("Users", usersSchema, "Users");
+                    
                     games = db.model("Games", gamesSchema, "Games");
                     resolve();
                 })
@@ -84,6 +87,85 @@ module.exports = function() {
              })
         },
         
+        gameGetAll: function(){
+            return new Promise((resolve, reject) =>{
+                games.find({}, (error, results) => {
+                    if (error)
+                    reject(err);
+                    else if (results.length == 0)
+                    reject("Fetched failed! The database is empty!");
+                    else
+                    resolve(results);
+                })
+            })
+        },
+
+        gameGetById: function(gameId){
+            return new Promise((resolve, reject)=>{
+                games.find({gameId: gameId}, (err, result)=>{
+                    if (err)
+                        reject(err);
+                    else if (!result || result.length == 0)
+                        reject(-1);
+                    else
+                        resolve(result[0]);
+                })
+            })
+        },
+
+        gameAdd: function(newGame) {
+            return new Promise((resolve, reject) => {
+                games.create({  
+                    gameId: newGame.gameID, 
+                    gameName: newGame.external
+                }, (error, item) => {
+                    if (error) {
+                        return reject(error.message);
+                    }
+                    
+                    return resolve(item);
+                })
+            })
+        },
+
+        gameUpdate: function(gameId, updatedGame){
+            //console.log(updatedGame);
+            //console.log(gameId);
+            return new Promise((resolve, reject)=>{
+                games.findOneAndUpdate(
+                    {gameId: gameId},    //filter query
+                    {  
+                        gameName: updatedGame.external  //properties to be updated, add more properties later here
+                    }, (err, result)=>{
+                        //console.log(result);
+                        if (err)
+                            reject(err);
+                        else
+                            resolve(result);
+                })
+            })
+        },
+        
+        /*,
+        // FOR TESTING PURPOSES
+            
+            gameGetByName: function(name){
+                return new Promise((resolve, reject)=>{
+                    games.find({
+                        gameName: { "$regex": name, "$option": "i"}
+                    },
+                    (err, results) =>{
+                        if (err)
+                        reject(err);
+                        else if (results.length == 0)
+                        reject("No game found!");
+                    else
+                    resolve(results);
+                })
+            })
+        }
+        */
+       
         initizalizePass: function (passport) {
             const authenticateUser = async (username, password, done) => {
                 console.log(username)
