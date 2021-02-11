@@ -6,6 +6,7 @@ import LoginUser from './loginUser';
 import NavBar from './navBar';
 import Whishlist from './wishlist';
 import Register from './Register';
+import History from './history';
 import Home from './Home';
 import Axios from 'axios';
 
@@ -105,6 +106,7 @@ class App extends Component {
           <Route exact path='/' render={() => (<Home/>)} />
           <Route exact path='/about' render={() => (<About />)} />
           <Route exact path='/game' render={() => (<Game />)} />
+          <Route exact path='/history' render={() => (<History />)} />
           <Route exact path='/register' render={() => (<Register redirect={this.state.redirect}/>)} />
           <Route exact path='/loginOk' render={() => (<LoginOk />)} />
           <Route exact path='/wishlist' render={() => (<Whishlist loggedIn={this.state.loggedIn} />)} />

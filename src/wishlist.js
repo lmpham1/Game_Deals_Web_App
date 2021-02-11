@@ -130,8 +130,13 @@ class Wishlist extends React.Component {
                             }
                         }).then(json => {
                             console.log(json)
-                            if (json.deals[0].price) {
-                                tempDeals.push(json.deals[0].price)
+                            if (json.deals) {
+                                if (json.deals[0].price) {
+                                    tempDeals.push(json.deals[0].price)
+                                }
+                                else {
+                                    tempDeals.push(0);
+                                }
                             }
                             else {
                                 tempDeals.push(0);
@@ -172,8 +177,12 @@ class Wishlist extends React.Component {
         }
         else {
             return (
-
-                <h2> Waiting to load wishlist</h2>
+                <div class="d-flex justify-content-center">
+                    <br></br>
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    </div>
             )
         }
     }
@@ -246,7 +255,7 @@ const DeleteAlert = (gameID, userID, email) => {
 const TableHeader = () => {
     return (
         <thead>
-                            <tr>
+                            <tr>    
                                 <th>Icon</th>
                                 <th>Game Title</th>
                                 <th>Current Price</th>
@@ -261,9 +270,21 @@ const TableHeader = () => {
 const TableBody = (props) => {
     //console.log(props);
     const [rrow, setRows] = useState(props.wishlist);
-    const removeRow = () =>{
-                            let temp = rrow;
-        temp.pop();
+    const removeRow = (obj) =>{
+        let temp = rrow;
+        //temp.pop();
+
+        let idx = null;
+        for (let i = 0; i < temp.length; i++) {
+            if (temp[i].gameID == obj.gameID) {
+                idx = i;
+                break;
+            }
+        }
+
+        // manually remove the game 
+        //! ^^ find better way to fix
+        temp.splice(idx, 1);
         setRows(rrow=>temp);
         console.log(rrow);
         props.forceUpdate();
@@ -277,7 +298,7 @@ const TableBody = (props) => {
                                 body: JSON.stringify(props)
                             })
                                 .then(async data => await data.json())
-                                .then(removeRow())
+                                .then(removeRow(props))
 
                         }
 
