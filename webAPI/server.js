@@ -15,6 +15,7 @@ const fetch = require("node-fetch");
 app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors({
+  origin: 'http://localhost:3000',
   credentials: true,
 }));
 
@@ -161,16 +162,42 @@ app.put('/api/updateNotif/:id/:state', (req, res) => {
 
 //Create user
 app.post('/api/users', (req,res) => {
-  console.log(req.body);
-  m.userAdd(req.body)
+  //Check username here
+  m.userGetByUsername(req.body)
   .then((data) => {
-    res.status(201).json(data);
+    if (data){
+      console.log("The username is already taken")
+      res.status(210).json(data);
+    }
+    else {
+      console.log("Username is available");
+      m.userAdd(req.body)
+      .then((data) => {
+        res.status(201).json(data);
+      })
+      .catch((error) => {
+      res.status(500).json({ "message": error });
+      })
+    }
   })
   .catch((error) => {
-  res.status(500).json({ "message": error });
+    res.status(500).json({ "message": error});
+  })
+     
+
+  })
+
+//Testing get by username
+app.post('/api/getuser', (req,res) => {
+  m.userGetByUsername("Elunyx")
+  .then((data) => {
+    res.json(data);
+    res.message("Username is available");
+  })
+  .catch((error) => {
+    res.status(500).json({ "message": error });
   })
 })
-
 
 //login user
 app.post('/api/login', (req, res, next) =>{  

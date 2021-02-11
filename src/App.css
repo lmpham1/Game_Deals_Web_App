@@ -29,10 +29,10 @@
 }
 
 #navbarNav ul li {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
-#navbarNav ul li login{
+#navbarNav ul li login {
   text-align: right;
 }
 
@@ -40,19 +40,50 @@ h1 {
   text-align: center;
 }
 
-.active-purple-2 input.form-control[type=text]:focus:not([readonly]) {
+.main-container {
+  width: 100%;
+}
+
+.form-register {
+  padding: 10px;
+  margin-left: 25%;
+  margin-right: 15%;
+}
+
+.btn-center {
+  margin-left: 40%;
+  margin-right: 50%;
+  width: 100px;
+}
+
+.active-purple-2 input.form-control[type='text']:focus:not([readonly]) {
   border-bottom: 1px solid #ce93d8;
   box-shadow: 0 1px 0 0 #ce93d8;
 }
-.active-purple input.form-control[type=text] {
+.active-purple input.form-control[type='text'] {
   border-bottom: 1px solid #ce93d8;
   box-shadow: 0 1px 0 0 #ce93d8;
 }
 
-.dropdown-heading-value{
+.dropdown-heading-value {
   overflow: hidden;
   max-width: 250px;
   min-width: 150px;
+}
+
+#error-text {
+  color: red;
+  font-weight: bold;
+}
+
+.account-created-text {
+  display: block;
+  color: green;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 100px;
+  margin-left: 25%;
+  margin-right: 25%;
 }
 
 @keyframes App-logo-spin {

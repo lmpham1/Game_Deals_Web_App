@@ -6,7 +6,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import { positions, Provider, transitions } from "react-alert";
-//import AlertMUITemplate from "react-alert-template-mui";
 import AlertTemplate from 'react-alert-template-basic';
 
 const options = {
