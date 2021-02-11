@@ -284,6 +284,12 @@ app.get('/api/db/games', (req, res) =>{
   .catch((error) => res.status(500).json(error));
 })
 
+//Get a game by its ID
+app.get('/api/db/game/:id', (req, res) =>{
+  m.gameGetById(req.params.id).then(result => res.status(200).json(result))
+  .catch((error) => res.status(500).json(error));
+})
+
 app.use((req, res) => {
     res.status(404).send("Resource not found");
 });
