@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import Axios from 'axios';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 class GameDetail extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -17,8 +20,53 @@ class GameDetail extends React.Component {
       loggedIn: false,
       gameInformation: {},
       cheapestDealEmpty: false,
-      stores: []
+      date: null,
+      commentInput: '',
+      stores: [],
+      comments: {}
     }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  handleChange(e) {
+    this.setState({ commentInput: e.target.value });
+  }
+
+  handleSubmit(e) {
+    const forceUpdate = () => {
+      this.setState(this.state);
+      this.forceUpdate();
+    }
+
+    const addRow = (obj) => {
+      this.state.comments.comments.push(obj);
+      forceUpdate();
+      this.setState({commentInput: ''});
+    }
+    e.preventDefault();
+    if (this.state.commentInput.length === 0) {
+      return;
+    }
+
+    const commentObj = {
+      comment: this.state.commentInput,
+      date: new Date(),
+      userId: this.state.userId._id,
+      userName: this.state.userId.userName,
+      userFName: this.state.userId.fName,
+      userLName: this.state.userId.lName
+    }
+
+    fetch(`http://localhost:8080/api/addComment/${this.state.comments._id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(commentObj)
+    })
+    .then(async data => await data.json())
+    .then(obj => addRow(obj))
   }
 
   componentDidMount() {
@@ -30,6 +78,7 @@ class GameDetail extends React.Component {
       if (res.data._id) {
         this.setState({ loggedIn: true });
         this.setState({ userId: res.data });
+        this.setState({date: new Date()});
       }
       else {
         this.setState({ loggedIn: false });
@@ -39,7 +88,7 @@ class GameDetail extends React.Component {
     });
 
     let hasSteamID = false;
-    fetch(`https://agile-sands-96303.herokuapp.com/api/game/${this.props.id}`)
+    fetch(`http://localhost:8080/api/game/${this.props.id}`)
       .then(res => {
         if (res.ok) {
           return res.json();
@@ -56,7 +105,10 @@ class GameDetail extends React.Component {
           isLoaded: true,
           items: json,
           isEmpty: false,
+          comments: json["0"]
         })
+        console.log("newGame");
+        console.log(json["0"]);
         if (json.info.steamAppID != null) {
           hasSteamID = true;
           this.setState({ thumbnail: `https://steamcdn-a.akamaihd.net/steam/apps/${json.info.steamAppID}/header.jpg?t=1602601042` })
@@ -160,30 +212,175 @@ class GameDetail extends React.Component {
   }
 
   render() {
-    
+    const forceUpdate = () => {
+      this.setState(this.state);
+      this.forceUpdate();
+  }
     var { isLoaded, items } = this.state;
     if (!isLoaded) {
       return (
-        <div class="d-flex justify-content-center">
-          <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+        <div>
+          <div class="d-flex justify-content-center">
+              <h4>Loading...</h4>
+          </div>
+          <div class="d-flex justify-content-center">
+              <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+              </div>
           </div>
         </div>
       );
     }
     else {
       document.title = items.info.title;
-      return (
-        <div>
-          <DisplayInfo userId={this.state.userId} gameInfo={this.state.gameInformation} cheapestDealEmpty={this.state.cheapestDealEmpty} items={this.state.items} thumbnail={this.state.thumbnail} />
-          <hr class="line"></hr>
-          <hr class="line"></hr>
-          <DisplayGameInfoTable items={this.state.items} stores={this.state.stores} />
-        </div>
-      );
+      //          <span class="badge badge-danger">X</span>
+      console.log(this.state.comments);
+      if (this.state.userId != null) {
+        this.state.gameInformation["date"] = new Date();
+        this.state.gameInformation["thumb"] = this.state.thumbnail;
+        fetch(`http://localhost:8080/api/history/push/${this.state.userId._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(this.state.gameInformation)
+        })
+          .then(data => data.json())
+          .then(res => console.log(res));
+      }
+
+      if (this.state.loggedIn) {
+        let len = `(${this.state.comments.comments.length})`;
+        return (
+          <div>
+            <DisplayInfo userId={this.state.userId} gameInfo={this.state.gameInformation} cheapestDealEmpty={this.state.cheapestDealEmpty} items={this.state.items} thumbnail={this.state.thumbnail} />
+            <hr class="line"></hr>
+            <hr class="line"></hr>
+            <DisplayGameInfoTable items={this.state.items} stores={this.state.stores} />
+            <h3><strong>Comments {this.state.comments.comments.length > 0 && (len)}</strong></h3>
+            <form onSubmit = {this.handleSubmit}>
+              <div class="form-group">
+                <textarea 
+                  value = {this.state.commentInput} 
+                  onChange={this.handleChange} 
+                  placeholder="Add a public comment..." 
+                  class="form-control" 
+                  rows="2"
+                  maxLength = "280"
+                />
+                <p class = "pull-right"><strong>Word Count:</strong> {this.state.commentInput.length}/280</p>
+                <div class = "submitForm">
+                <button disabled={this.state.commentInput == ''} class="btn btn-primary btn-lg" id = "submitBtn" role="button">Submit</button>
+                <button onClick = {"this.setState({commentInput: ''});"} class="btn btn-secondary btn-lg">Cancel</button>
+                </div>
+              </div>
+            </form>
+            <DisplayComments userId = {this.state.userId._id} forceUpdate = {forceUpdate} gameId = {this.state.comments._id} comments={this.state.comments.comments}/>
+          </div>
+        );
+      }
+      else {
+        return (
+          <div>
+            <DisplayInfo userId={this.state.userId} gameInfo={this.state.gameInformation} cheapestDealEmpty={this.state.cheapestDealEmpty} items={this.state.items} thumbnail={this.state.thumbnail} />
+            <hr class="line"></hr>
+            <hr class="line"></hr>
+            <DisplayGameInfoTable items={this.state.items} stores={this.state.stores} />
+            <h3><strong>Comments</strong></h3>
+            <div>
+              <h5><i>Log in to comment</i></h5>
+            </div>
+            <DisplayComments userId = {this.state.userId} forceUpdate = {forceUpdate} gameId = {this.state.comments._id} comments={this.state.comments.comments}/>
+          </div>
+        );
+      
+      }
     }
   }
 }
+
+const DisplayComments = (props) => {
+  const removeRow = (idx, arr, forceUpdate) => {
+    let removedComment = arr.splice(idx, 1);
+    forceUpdate();
+  }
+
+  const removeComment = (gameId, commentId, idx, arr, forceUpdate) => {
+    fetch(`http://localhost:8080/api/removeComment/${gameId}/${commentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(async data => await data.json())
+    .then(obj => removeRow(idx, arr, forceUpdate))
+  }
+
+  const rows = props.comments.map((item, index) => {
+    return (
+      <SingleCommentView userId = {props.userId} forceUpdate = {props.forceUpdate} comments = {props.comments} gameId = {props.gameId} removeComment = {removeComment} item = {item} index = {index}/>
+    )
+  })
+  return (
+    <div class="container">
+      <div class="row" id = "commentsRow">
+        <div class="col">
+          {rows}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SingleCommentView = (props) => {
+  TimeAgo.addLocale(en)
+  const timeAgo = new TimeAgo('en-US')
+  const date = new Date(props.item.date)
+  return (
+    <div class = "media g-mb-30 media-comment">
+      <img
+        class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15"
+        src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/263F418F2C47943D98B2877ECAD174927FBBD359C4AFB45BE0C6A22AD589D22E/scale?width=300&aspectRatio=1&format=png"
+        alt="Image Description"
+      />
+      <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+        <div class="g-mb-15">
+          <h5 class="h5 g-color-gray-dark-v1 mb-0">{props.item.userFName} {props.item.userLName}</h5>
+          <span class="g-color-gray-dark-v4 g-font-size-12">{timeAgo.format(date)}</span>
+        </div>
+        <p id = "commentTxt">{props.item.comment}</p>
+        <ul class="list-inline d-sm-flex my-0">
+          {props.userId == props.item.userId && <li class="list-inline-item ml-auto">
+            <a onClick={() => props.removeComment(props.gameId, props.item._id, props.index, props.comments, props.forceUpdate)} role="button" class="text-muted">Remove</a>
+          </li>}
+        </ul>
+      </div>
+    </div>
+  );
+}
+/*
+<div class="media g-mb-30 media-comment">
+            <img
+              class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15"
+              src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/263F418F2C47943D98B2877ECAD174927FBBD359C4AFB45BE0C6A22AD589D22E/scale?width=300&aspectRatio=1&format=png"
+              alt="Image Description"
+            />
+            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+              <div class="g-mb-15">
+                <h5 class="h5 g-color-gray-dark-v1 mb-0">John Doe</h5>
+                <span class="g-color-gray-dark-v4 g-font-size-12">
+                  5 days ago
+                </span>
+              </div>
+              <p>Great game! I enjoyed playing GTA since I was a kid.</p>
+              <ul class="list-inline d-sm-flex my-0">
+                <li class="list-inline-item ml-auto">
+                  <a class="text-muted">Remove</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+ */
 // <DisplayGameInfoTable items = {this.state.items} stores = {this.state.stores} />
 const DisplayInfo = (props) => {
   let gameInfo = props.gameInfo
@@ -205,7 +402,7 @@ const DisplayInfo = (props) => {
       <div class="card">
         <img class="card-img-top banner" src={props.thumbnail} alt="Responsive image"></img>
         <div class="card-body">
-          <h3>{props.items.info.title}</h3>
+          <h3><strong>{props.items.info.title}</strong></h3>
         </div>
       </div>
     )
@@ -286,6 +483,13 @@ const DisplayInfo = (props) => {
 const AddRemoveGame = (props, userId) => {
   console.log("INSIDE ADDREMOVEGAME ELSE" + userId)
   var heart = document.getElementById("heart");
+
+  const notifyAdd = () => {
+    toast.success(`Game has been added to your wishlist.`);
+  }
+  const notifyRemoved = () => {
+    toast.error(`Game has been removed from your wishlist.`);
+  }
   if (userId == "") {
 
   }
@@ -302,6 +506,7 @@ const AddRemoveGame = (props, userId) => {
       })
         .then(data => data.json())
         .then(res => console.log(res));
+        notifyRemoved();
     }
     else {
       heart.classList.remove("fa-heart-o");
@@ -315,50 +520,19 @@ const AddRemoveGame = (props, userId) => {
       })
         .then(data => data.json())
         .then(res => console.log(res));
+        notifyAdd();
+      
     }
 
   }
 
 }
 
-const Notifs = (props) => {
-  var bell = document.getElementById("bell");
-  console.log(bell)
-  if (bell.classList.contains("fa-bell")) { // filled
-    bell.classList.remove("fa-bell");
-    bell.classList.add("fa-bell-slash")
-    /*
-    fetch(`http://localhost:8080/api/removeGame/5f72836f83d8583460acb574`,{
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    body: JSON.stringify(props)
-  })
-  .then(data => data.json())
-  .then(res => console.log(res));*/
-  }
-  else {
-    bell.classList.remove("fa-bell-slash");
-    bell.classList.add("fa-bell");
-    /*
-    fetch(`http://localhost:8080/api/addGame/5f72836f83d8583460acb574`,{
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(props)
-    })
-    .then(data => data.json())
-    .then(res => console.log(res));*/
-  }
-
-}
 const DisplayGameInfoTable = (props) => {
   return (
     <div>
-      <h3>Current Deals:</h3>
-      <table id="dealsTable" class="table table-hover table-dark">
+      <h3><strong>Current Deals</strong></h3>
+      <table id="dealsTable" class="table table-hover table-dark ">
         <TableHeader />
         <TableBody deals={props.items.deals} stores={props.stores} />
       </table>

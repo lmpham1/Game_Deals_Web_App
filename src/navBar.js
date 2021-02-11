@@ -118,6 +118,7 @@ class NavBar extends React.Component {
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <Link to="/"><button class="dropdown-item" type="button" onClick={logOut} href="#">Logout</button></Link>
                             <Link to="/wishlist"> <a class="dropdown-item" href="#">Wishlist</a></Link>
+                            <Link to="/history"> <a class="dropdown-item" href="#">History</a></Link>
                         </div>
                     </div>
 

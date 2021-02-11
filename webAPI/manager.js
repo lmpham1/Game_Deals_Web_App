@@ -5,10 +5,11 @@ const localStrategy = require('passport-local').Strategy
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', true);
 //mongoose.set('useUnifiedTopology', true);
 
 const bcrypt = require('bcrypt');
+const fetch = require("node-fetch");
+
 
 const usersSchema = require('./schema-users');
 const gamesSchema = require('./schema-games');
@@ -52,9 +53,7 @@ module.exports = function() {
 
                 db.once('open', () => {
                     console.log('Connection to the database was successful');
-                    
                     users = db.model("Users", usersSchema, "Users");
-                    
                     games = db.model("Games", gamesSchema, "Games");
                     resolve();
                 })
@@ -65,27 +64,42 @@ module.exports = function() {
         userAdd: function (newItem) {
             return new Promise(async (resolve, reject) => {
                 console.log(newItem.password)
-                    if (newItem.password) {
-                        test = newItem.password
-                        salt = await bcrypt.genSalt();
-                        newItem.password = await bcrypt.hash(newItem.password, salt);
-                        console.log(salt)
-                        console.log(newItem.password)
+                if (newItem.password) {
+                    test = newItem.password
+                    salt = await bcrypt.genSalt();
+                    newItem.password = await bcrypt.hash(newItem.password, salt);
+                    console.log(salt)
+                    console.log(newItem.password)
+                }
+                
+                if (bcrypt.compare(newItem.password, test))
+                console.log("encrypt worked")
+                else
+                console.log("encrypt did not work")
+                users.create(newItem, (error, item) => {
+                    if (error) {
+                        return reject(error.message);
+                    }
+                    console.log(newItem.password)
+                    return resolve(item)
+                })
+            })
+        },
+        
+        /*,
+        // FOR TESTING PURPOSES
+        gameAdd: function(newGame) {
+            return new Promise((resolve, reject) => {
+                games.create(newGame, (error, item) => {
+                    if (error) {
+                        return reject(error.message);
                     }
                     
-                    if (bcrypt.compare(newItem.password, test))
-                    console.log("encrypt worked")
-                    else
-                    console.log("encrypt did not work")
-                    users.create(newItem, (error, item) => {
-                        if (error) {
-                            return reject(error.message);
-                        }
-                        console.log(newItem.password)
-                        return resolve(item)
-                    })
-             })
+                    return resolve(item);
+                })
+            })
         },
+        
         
         gameGetAll: function(){
             return new Promise((resolve, reject) =>{
@@ -99,55 +113,20 @@ module.exports = function() {
                 })
             })
         },
-
+        
         gameGetById: function(gameId){
             return new Promise((resolve, reject)=>{
-                games.find({gameId: gameId}, (err, result)=>{
+                games.findById(gameId, (err, result)=>{
                     if (err)
                         reject(err);
-                    else if (!result || result.length == 0)
-                        reject(-1);
-                    else
-                        resolve(result[0]);
-                })
-            })
-        },
-
-        gameAdd: function(newGame) {
-            return new Promise((resolve, reject) => {
-                games.create({  
-                    gameId: newGame.gameID, 
-                    gameName: newGame.external
-                }, (error, item) => {
-                    if (error) {
-                        return reject(error.message);
-                    }
-                    
-                    return resolve(item);
-                })
-            })
-        },
-
-        gameUpdate: function(gameId, updatedGame){
-            //console.log(updatedGame);
-            //console.log(gameId);
-            return new Promise((resolve, reject)=>{
-                games.findOneAndUpdate(
-                    {gameId: gameId},    //filter query
-                    {  
-                        gameName: updatedGame.external  //properties to be updated, add more properties later here
-                    }, (err, result)=>{
-                        //console.log(result);
-                        if (err)
-                            reject(err);
+                        else if (!result)
+                        reject("Game not found!");
                         else
-                            resolve(result);
+                        resolve(result);
+                    })
                 })
-            })
-        },
-        
-        /*,
-        // FOR TESTING PURPOSES
+            }
+            ,
             
             gameGetByName: function(name){
                 return new Promise((resolve, reject)=>{
@@ -163,7 +142,18 @@ module.exports = function() {
                     resolve(results);
                 })
             })
-        }
+        },
+        
+        gameUpdate: function(gameId, updatedGame){
+            return new Promise((resolve, reject)=>{
+                games.findByIdAndUpdate(gameId, updatedGame,(err, result)=>{
+                    if (err)
+                    reject(err);
+                    else
+                    resolve(result);
+                })
+            })
+        },
         */
        
         initizalizePass: function (passport) {
@@ -229,22 +219,6 @@ module.exports = function() {
                     reject("User not found!");
                     else
                     resolve(results);
-                })
-            })
-        },
-
-        userGetByUsername: function(username){
-            return new Promise((resolve, reject)=>{
-                users.findOne({userName: username}, (err, result)=>{
-                    if (err){
-                        reject(err);
-                    }
-                    else if (!result){
-                        resolve("No user found");
-                    }
-                    else {
-                        resolve("User already exists");
-                    }
                 })
             })
         },
@@ -387,12 +361,14 @@ module.exports = function() {
                         for (let i = 0; i < result.wishlistedGames.length; i++) {
                             if (obj.gameID == result.wishlistedGames[i].gameID) {
                                 found = true;
+                                index = i;
                                 break;
                             }
                         }
 
                         if (found) {
-                            result.wishlistedGames.pop(obj);
+                            //result.wishlistedGames.pop(obj); //! DOESNT WORK! FIX THIS!!!!
+                            result.wishlistedGames.splice(index, 1);
                             users.findByIdAndUpdate(userId, result, { new: true }, (err, result) => {
                                 if (err)
                                     reject(err);
@@ -409,18 +385,15 @@ module.exports = function() {
             })
         },
 
-        userGetByUsername: function(body){
+        userGetByUsername: function(username){
             return new Promise((resolve, reject)=>{
-                users.findOne({userName: body.userName}, (err, result)=>{
-                    console.log(result);
+                users.findOne({userName: username}, (err, result)=>{
                     if (err)
                         reject(err);
-                    else if (result == null){
-                        resolve(false);
-                    }
-                    else {
-                        resolve(true);
-                    }
+                    else if (!result)
+                        reject("User not found");
+                    else
+                        resolve(result);
                 })
             })
         },
@@ -452,8 +425,212 @@ module.exports = function() {
                         resolve("User " + id + " deleted!");
                 })
             })
+        },
+
+        getHistory: function(userId) {
+            return new Promise((resolve,reject) => {
+                users.findById(userId, (err, result) => {
+                    if (err){ // error in the database
+                        console.log("error");
+                        reject (err);
+                    }
+                    else if (!result) { // if no user is found          
+                        console.log("No user")
+                        reject("No user found");
+                    }
+                    else {
+                        resolve(result.searchHistory);
+                    }
+                })
+            })
+        },
+
+        popGameFromHistory: function(userId, body) {
+
+            console.log(userId);
+            return new Promise((resolve, reject) => {
+                users.findById(userId, (err, result) => {
+                    if (err){ // error in the database
+                        console.log("error");
+                        reject (err);
+                    }
+                    else if (!result) { // if no user is found          
+                        console.log("No user")
+                        reject("No user found");
+                    }
+                    else {
+                        let found = false;
+
+                        let index = null;
+                        for (let i = 0; i < result.searchHistory.length; i++) {
+                            if (body.gameID == result.searchHistory[i].gameID) {
+                                found = true;
+                                index = i;
+                                break;
+                            }
+                        }
+                        
+                        if (!found) {
+                            reject(err);
+                        }
+                        else {
+                            result.searchHistory.splice(index, 1);
+                        }
+
+                        users.findByIdAndUpdate(userId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result);
+                        })
+                    }
+                })
+            })
+        },
+
+        pushGameToHistory: function(userId, body) {
+            return new Promise((resolve, reject) => {
+                users.findById(userId, (err, result) => {
+                    if (err){ // error in the database
+                        console.log("error");
+                        reject (err);
+                    }
+                    else if (!result) { // if no user is found          
+                        console.log("No user")
+                        reject("No user found");
+                    }
+                    else {
+                        let found = false;
+
+                        let index;
+                        for (let i = 0; i < result.searchHistory.length; i++) {
+                            if (body.gameID == result.searchHistory[i].gameID) {
+                                found = true;
+                                index = i;
+                                break;
+                            }
+                        }
+
+                        // if the game hasn't been found in the array, 
+                        //      push the game to the top of the stack
+                        if (!found) {
+                            result.searchHistory.unshift(body);
+                        }
+                        // if game exists, 
+                        // remove game from the list and 
+                        // push the updated game body to the top of the stack
+                        else {
+                            
+                            result.searchHistory.splice(index, 1);
+                            result.searchHistory.unshift(body);
+                        }
+
+                        users.findByIdAndUpdate(userId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result);
+                        })
+                    }
+                })
+            })
+        },
+
+        pushComment: function(gameId, body) {
+            console.log(body);
+            console.log(new Date());
+            return new Promise(async (resolve, reject) => {
+                games.findById(gameId, (err, result) => {
+                    if (err) {
+                        console.log("error");
+                        reject(err);
+                    }
+                    else if (!result) {
+                        console.log("No game has been found");
+                        reject("No game has been found");
+                    }
+                    else {
+                        body["date"] = new Date();
+                        result.comments.push(body);
+                        const len = result.comments.length;
+
+                        games.findByIdAndUpdate(gameId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result.comments[len - 1]);
+                        })
+                    }
+                })
+            })
+        },
+
+        popComment: function(gameId, commentId) {
+            return new Promise(async (resolve, reject) => {
+                games.findById(gameId, (err, result) => {
+                    if (err) {
+                        console.log("error");
+                        reject(err);
+                    }
+                    else if (!result) {
+                        console.log("No game has been found");
+                        reject("No game has been found");
+                    }
+                    else {
+                        let found = false;
+                        for (let i = 0; i < result.comments.length; i++) {
+                            if (result.comments[i]._id == commentId) {
+                                result.comments.splice(i, 1);
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            reject("Comment is not in list");
+                        }
+                        else {
+                            games.findByIdAndUpdate(gameId, result, { new: true }, (err, result) => {
+                                if (err)
+                                    reject(err);
+                                else
+                                    resolve(result);
+                            })
+                        }
+                        
+                    }
+                })
+            })
+        },
+
+        // new function to replace the old version of GET gamebyid..
+        // now merges the CheapShark API and the object stored in MongoDB
+        findGameById: function(gameID) {
+            return new Promise(async (resolve, reject) => {
+                const gameUrl = `https://www.cheapshark.com/api/1.0/games?id=${gameID}`;
+
+                fetch(gameUrl)
+                .then(res => res.json())
+                .then(data => {
+                    games.find({gameId: gameID}, (err, result) => {
+                        if (err) {
+                            console.log("error");
+                            reject(err);
+                        }
+                        else if (!result) {
+                            console.log("No game has been found");
+                            reject("No game has been found");
+                        }
+                        else {
+                            const mergeObj = {...data, ...result}; // combine two objects into one
+                            resolve(mergeObj);
+                        }
+                    })
+                })
+                .catch(error => console.log('error', error));
+            })
         }
         
     }
 
-}
+}   

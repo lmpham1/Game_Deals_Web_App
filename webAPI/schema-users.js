@@ -9,7 +9,8 @@ var usersSchema = new Schema({
     lName: String,
     email: {type: String, required: true},
     password: {type: String, required: true},
-    wishlistedGames: []
+    wishlistedGames: [],
+    searchHistory: []
 });
 
 module.exports = usersSchema;

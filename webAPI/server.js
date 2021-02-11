@@ -15,7 +15,7 @@ const fetch = require("node-fetch");
 app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: "http://localhost:3000",
   credentials: true,
 }));
 
@@ -129,6 +129,58 @@ app.put('/api/addGame/:id', (req, res) => {
   })
 })
 
+// add game to the stack
+app.put('/api/history/push/:id', (req, res) => {
+  m.pushGameToHistory(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.put('/api/history/pop/:id', (req, res) => {
+  m.popGameFromHistory(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+// display all games in search history
+app.get('/api/history/:id', (req, res) => {
+  m.getHistory(req.params.id)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.post('/api/addComment/:id', (req, res) => {
+  m.pushComment(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.put('/api/removeComment/:gameId/:commentId', (req, res) => {
+  m.popComment(req.params.gameId, req.params.commentId)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
 app.put('/api/removeGame/:id', (req, res) => {
   m.removeGame(req.params.id, req.body)
   .then((data) => {
@@ -162,42 +214,16 @@ app.put('/api/updateNotif/:id/:state', (req, res) => {
 
 //Create user
 app.post('/api/users', (req,res) => {
-  //Check username here
-  m.userGetByUsername(req.body)
+  console.log(req.body);
+  m.userAdd(req.body)
   .then((data) => {
-    if (data){
-      console.log("The username is already taken")
-      res.status(210).json(data);
-    }
-    else {
-      console.log("Username is available");
-      m.userAdd(req.body)
-      .then((data) => {
-        res.status(201).json(data);
-      })
-      .catch((error) => {
-      res.status(500).json({ "message": error });
-      })
-    }
+    res.status(201).json(data);
   })
   .catch((error) => {
-    res.status(500).json({ "message": error});
-  })
-     
-
-  })
-
-//Testing get by username
-app.post('/api/getuser', (req,res) => {
-  m.userGetByUsername("Elunyx")
-  .then((data) => {
-    res.json(data);
-    res.message("Username is available");
-  })
-  .catch((error) => {
-    res.status(500).json({ "message": error });
+  res.status(500).json({ "message": error });
   })
 })
+
 
 //login user
 app.post('/api/login', (req, res, next) =>{  
@@ -225,11 +251,15 @@ app.get('/api/logout', (req, res)=>{
 
  //Fetch single game based on gameID
 app.get('/api/game/:gameid', (req, res)=>{
+  m.findGameById(req.params.gameid)
+  .then(data => res.json(data))
+  .catch(error => console.log('error', error));
+  /*
   var gameUrl = "https://www.cheapshark.com/api/1.0/games?id=" + req.params.gameid;
   fetch(gameUrl)
   .then(res => res.json())
   .then(data => res.json(data))
-  .catch(error => console.log('error', error));
+  .catch(error => console.log('error', error));*/
 });
 
 //Fetch game list based on search term
@@ -274,48 +304,6 @@ app.get('/user', (req, res)=>{
   res.send(req.user);
 })
 
-/*************************
- * Our API Game Requests *
- *************************/
-
-//Add/Update game to the database
-app.put('/api/db/update', (req, res) =>{
-  let game = req.body;
-
-  //look up the game in our database
-  m.gameGetById(game.gameID).then((oldGame) => {
-
-    //if the game exists, only update the game
-    m.gameUpdate(oldGame.gameId, game).then((updatedGame) => {
-      res.json(updatedGame);
-      console.log("Game " + updatedGame.gameId + " updated!")
-    }).catch((error) => console.log(error))     //end of m.gameUpdate()
-
-  }).catch((error) => {
-
-    //if the game does not exist (error == -1), add it to the database
-    if (error === -1){
-      m.gameAdd(game).then((addedGame) => {
-        res.json(addedGame);
-        console.log("Game " + addedGame.gameId + " added!")
-      }).catch((err) => console.log(err));    //end of m.gameAdd()
-    } 
-    else console.log(error);   //other errors
-
-  })  //end of m.gameGetById
-})
-
-//Get all games from our database
-app.get('/api/db/games', (req, res) =>{
-  m.gameGetAll().then(results => res.status(200).json(results))
-  .catch((error) => res.status(500).json(error));
-})
-
-//Get a game by its ID
-app.get('/api/db/game/:id', (req, res) =>{
-  m.gameGetById(req.params.id).then(result => res.status(200).json(result))
-  .catch((error) => res.status(500).json(error));
-})
 
 app.use((req, res) => {
     res.status(404).send("Resource not found");
