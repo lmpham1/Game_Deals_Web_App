@@ -1,4 +1,4 @@
-## February 15th, 2021)
+## (February 15th, 2021)
 ### Implemented the comment section under the game-details page
 * Wrote backend code that allows users to add and delete a comment
 * Comments will be saved in the database 
