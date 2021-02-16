@@ -1,3 +1,9 @@
+## February 15th, 2021)
+### Implemented the comment section under the game-details page
+* Wrote backend code that allows users to add and delete a comment
+* Comments will be saved in the database 
+* Create a new component in game-details page that allows users to comment about the game and view other comments
+
 ## (January 28th, 2021)
 ### Added User Registration functionality
 * Created route for user registration page
