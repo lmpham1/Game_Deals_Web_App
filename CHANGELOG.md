@@ -1,3 +1,10 @@
+## (February 16th, 2021)
+### Implemented dark mode
+* Implemented global stylesheet and themes
+* Added dark mode toggle to switch between light theme (default) and dark theme
+* Wrote backend code to save theme setting to user account so proper theme is loaded upon login
+* Updated some CSS across the site
+
 ## (February 15th, 2021)
 ### Implemented the comment section under the game-details page
 * Wrote backend code that allows users to add and delete a comment
