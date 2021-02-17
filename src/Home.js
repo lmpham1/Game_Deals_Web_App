@@ -24,7 +24,7 @@ class Home extends Component {
           <div className="md-form active-purple active-purple-2 mb-3">
             <h1>Find the best game deals</h1>
             <hr/>
-            <GameSearch></GameSearch>
+            <GameSearch loggedIn={this.props.loggedIn}></GameSearch>
             {
                 this.state.redirect ? 
                 <div className="account-created-text">
