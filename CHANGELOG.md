@@ -1,6 +1,6 @@
 ## (February 16th, 2021)
 ### Implemented dark mode
-* Implemented global stylesheet and themes
+* Implemented global stylesheet and dark theme
 * Added dark mode toggle to switch between light theme (default) and dark theme
 * Wrote backend code to save theme setting to user account so proper theme is loaded upon login
 * Updated some CSS across the site
