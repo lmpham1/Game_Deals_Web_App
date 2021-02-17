@@ -1,3 +1,8 @@
+## (February 17th, 2021)
+### Added some functionalities to Game Search component
+* Created an "Add to wishlist" button for each game in the search result
+* Implemented pagination for the search results, showing 10 games at a time
+
 ## (February 16th, 2021)
 ### Implemented dark mode
 * Implemented global stylesheet and dark theme
