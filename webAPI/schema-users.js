@@ -9,6 +9,7 @@ var usersSchema = new Schema({
     lName: String,
     email: {type: String, required: true},
     password: {type: String, required: true},
+    theme: {type: String, default:"light"},
     wishlistedGames: [],
     searchHistory: []
 });

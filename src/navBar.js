@@ -4,6 +4,8 @@ import { Switch, Route, Link, Redirect, withRouter } from "react-router-dom";
 import $ from 'jquery';
 import Axios from 'axios';
 import './App.css';
+import Toggle from "react-toggle";
+
 
 class NavBar extends React.Component {
 
@@ -15,10 +17,9 @@ class NavBar extends React.Component {
             loginUsername: "",
             loginPassword: "",
             data: null,
-            isOpen: false
+            isOpen: false,
+            theme: ""
         }
-        console.log("This")
-        console.log(props)
     }
 
 
@@ -42,7 +43,6 @@ class NavBar extends React.Component {
         });
     }
 
-
     render() {
         const login = () => {
             Axios({
@@ -61,7 +61,7 @@ class NavBar extends React.Component {
                     this.setState({ data: res.data });
                     //this.setState(this.state);
                     this.setState({ loggedIn: true });
-
+                    window.location.reload(false);
                     this.props.handleLogin();
                     //this.props.history.push("/");
                 }
@@ -83,21 +83,20 @@ class NavBar extends React.Component {
             }).then((res) => {
                 this.setState({ loginUsername: "" });
                 this.setState({ loggedIn: false });
+                window.location.reload(false);
                 this.props.handleLogout();
                 //this.forceUpdate();
             });
         };
+        
         return (
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-lg">
                 <a class="navbar-brand" href="/">Game Deals</a>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item active">
                             <Link to='/'>Home</Link>
-                        </li>
-                        <li class="nav-item">
-                            <Link to='/game'>Game</Link>
                         </li>
                         <li class="nav-item">
                             <Link to='about'>About</Link>
@@ -107,18 +106,15 @@ class NavBar extends React.Component {
                         </li>
                     </ul>
                 </div>
-                <div>
-
-                </div>
                 {this.state.loggedIn == true ?
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            "Settings"
+                            Settings
                     </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <Link to="/"><button class="dropdown-item" type="button" onClick={logOut} href="#">Logout</button></Link>
                             <Link to="/wishlist"> <a class="dropdown-item" href="#">Wishlist</a></Link>
                             <Link to="/history"> <a class="dropdown-item" href="#">History</a></Link>
+                            <Link to="/"><button class="dropdown-item logout" type="button" onClick={logOut} href="#">Logout</button></Link>
                         </div>
                     </div>
 
@@ -137,7 +133,6 @@ class NavBar extends React.Component {
                         <div class="collapse" id="collapseExample">
                             <div class="card card-body">
                                 <p class="text-danger">Wrong Credentials!</p>
-
                             </div>
                         </div>
                     </form>
