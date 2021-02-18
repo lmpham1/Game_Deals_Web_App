@@ -69,6 +69,11 @@ class GameDetail extends React.Component {
     .then(obj => addRow(obj))
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ loggedIn: nextProps.loggedIn });  
+    this.setState({ userId: nextProps.user})
+  }
+
   componentDidMount() {
     Axios({
       method: "GET",

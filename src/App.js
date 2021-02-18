@@ -9,14 +9,12 @@ import Register from './Register';
 import History from './history';
 import Home from './Home';
 import Axios from 'axios';
+import {toast} from 'react-toastify';
 
 //Routing setup
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      loggedIn: false,
-    };
     this.handleLogout = this.handleLogout.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     //call to check on refresh, like F5
@@ -26,13 +24,20 @@ class App extends Component {
       url: "http://localhost:8080/user",
     }).then((res) => {
       if (res.data._id) {
-        this.setState({ loggedIn: true });
+        this.setState({ loggedIn: true, user: res.data});
+        //console.log(res.data);
       }
       else {
         this.setState({ loggedIn: false });
       }
     });
   }
+  
+  state = { 
+    loggedIn: false,
+    user: null
+  };
+
   componentDidMount() {
     //this.addToDatabase();
   }
@@ -90,11 +95,14 @@ class App extends Component {
 
   handleLogout() {
     this.setState({ loggedIn: false });
+    //window.location.reload(false);
   }
   handleLogin() {
     this.setState({ loggedIn: true });
-    console.log(this.state.loggedIn + "LOGGEDIN APP.JA")
+    console.log(this.state.loggedIn + "LOGGEDIN APP.JS");
     this.setState(this.state);
+    //window.location.reload(false);
+    //toast.success("Welcome back, " + this.state.user.fName + "!");
   }
   render() {
     return (
@@ -103,14 +111,13 @@ class App extends Component {
         <hr />
 
         <Switch>
-          <Route exact path='/' render={() => (<Home/>)} />
+          <Route exact path='/' render={() => (<Home loggedIn={this.state.loggedIn}/>)} />
           <Route exact path='/about' render={() => (<About />)} />
-          <Route exact path='/game' render={() => (<Game />)} />
           <Route exact path='/history' render={() => (<History />)} />
           <Route exact path='/register' render={() => (<Register redirect={this.state.redirect}/>)} />
           <Route exact path='/loginOk' render={() => (<LoginOk />)} />
           <Route exact path='/wishlist' render={() => (<Whishlist loggedIn={this.state.loggedIn} />)} />
-          <Route exact path='/game-detail/:id' render={(props) => (<GameDetail id={props.match.params.id} />)} />
+          <Route exact path='/game-detail/:id' render={(props) => (<GameDetail id={props.match.params.id} loggedIn={this.state.loggedIn} user={this.state.user}/>)} />
         </Switch>
       </div>
     )
@@ -148,15 +155,6 @@ const LoginOk = () => {
     </div>
   )
 
-}
-
-//Game Component
-const Game = () => {
-  return (
-    <div>
-      <p>Game</p>
-    </div>
-  )
 }
 
 export default App;

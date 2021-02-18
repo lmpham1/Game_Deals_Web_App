@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import {Link, withRouter, Redirect} from "react-router-dom";
+import Axios from 'axios';
 import Slider from '@material-ui/core/Slider';
 import MultiSelect from "react-multi-select-component";
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button'
+import Button from 'react-bootstrap/Button';
+import Popover from 'react-bootstrap/Popover';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import {toast} from 'react-toastify';
 import './App.css';
 
 class GameSearch extends React.Component{
@@ -19,19 +23,15 @@ class GameSearch extends React.Component{
         this.handleStoreFilter = this.handleStoreFilter.bind(this);
         this.handleSortChange = this.handleSortChange.bind(this);
 
-        /* Pagination Logic (Not Working)
         this.handlePageClick = this.handlePageClick.bind(this);
-        this.setPrevAndNextBtnClass = this.setPrevAndNextBtnClass.bind(this);
-        this.btnIncrementClick = this.btnIncrementClick.bind(this);
-        this.btnDecrementClick = this.btnDecrementClick.bind(this);
-        this.btnPrevClick = this.btnPrevClick.bind(this);
-        this.btnNextClick = this.btnNextClick.bind(this);
-        */
 
         this.handleResetFilter = this.handleResetFilter.bind(this);
         this.handleSaveFilter = this.handleSaveFilter.bind(this);
         this.handleOpenFilter = this.handleOpenFilter.bind(this);
         this.handleCloseFilter = this.handleCloseFilter.bind(this);
+
+        this.handleAddGameToWishList = this.handleAddGameToWishList.bind(this);
+        this.handleRemoveGameFromWishlist = this.handleRemoveGameFromWishlist.bind(this);
     }
 
     state = { 
@@ -49,16 +49,15 @@ class GameSearch extends React.Component{
         onSaleFilter: false, 
         sortBy: 0,
         
-        gamesPerPage: 10,
-        currentPage: 1,
-        upperPageBound: 3,
-        lowerPageBound: 0,
-        isPrevBtnActive: 'disable',
-        isNextBtnActive: '',
-        pageBound: 3,
+        currentPageGames: [],
+        currentPageNo: 0,
+        pageIsClicked: false,
 
         showFilter: false,
-        saveChangesClicked: false
+        saveChangesClicked: false,
+
+        loggedIn: false,
+        userId: null
     };
 
     //handle Search String Changes
@@ -71,7 +70,7 @@ class GameSearch extends React.Component{
         //console.log(e.target.value);
 
         this.setState({games: [], deals: [], isLoading: true, isEmpty: true, searchBtnClicked: true});
-        
+
         if (!this.state.search == ""){
             
             //fetch games using search term
@@ -85,17 +84,16 @@ class GameSearch extends React.Component{
                     throw Error(`HTTP ${response.status}, ${response.statusText}`);
                 }
             }).then(responseData =>{
-                //console.log(responseData);
                 
                 this.setState({ games: responseData});
                 if (this.state.games.length > 0){
-                    this.setState({ isEmpty: false});
+                    this.setState({isEmpty: false});
                 }
                 //console.log(this.state.games);
 
                 //fetch deals
                 this.state.games.map((game, index)=>{
-                    fetch(`https://agile-sands-96303.herokuapp.com/api/deal/${game.cheapestDealID}`)
+                    fetch(`https://www.cheapshark.com/api/1.0/deals?id=${game.cheapestDealID}`)
                     .then(response => {
                         if (response.ok){
                             return response.json();
@@ -123,8 +121,28 @@ class GameSearch extends React.Component{
         }
         //end of if statement
     } //end of handleSearch
+
+    componentDidUpdate(){
+        
+    }
     
     componentDidMount(){
+        Axios({
+            method: "GET",
+            withCredentials: true,
+            url: "http://localhost:8080/user",
+          }).then((res) => {
+            if (res.data._id) {
+              this.setState({ loggedIn: true });
+              this.setState({ userId: res.data });
+            }
+            else {
+              this.setState({ loggedIn: false });
+            }
+            console.log(res.data);
+            console.log("loggedIn STATE>>>>>    " + this.state.loggedIn);
+        });
+
         fetch(`https://agile-sands-96303.herokuapp.com/api/stores`).then(response =>{
             if (response.ok){
                 return response.json();
@@ -145,74 +163,51 @@ class GameSearch extends React.Component{
         }).catch(error => console.log(error));        
     };
 
-    /* Pagination Logic (Not Working)
-    componentDidUpdate(){
-        $("ul li.active").removeClass('active');
-        $('ul li#'+this.state.currentPage).addClass('active');
+    componentWillReceiveProps(nextProps) {
+        this.setState({ loggedIn: nextProps.loggedIn });  
+      }
+
+    handleAddGameToWishList(gameObj, user){
+        //console.log(user);
+        fetch(`http://localhost:8080/api/addGame/${this.state.userId._id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gameObj)
+        })
+        .then(data => data.json())
+        .then((res) => {
+            //console.log(res);
+            
+            this.setState({userId: res});
+        })
+        .catch(err => console.log(err));
     }
 
-    handlePageClick(event) {
-        let listid = Number(event.target.id);
-        this.setState({
-          currentPage: listid
-        });
-        $("ul li.active").removeClass('active');
-        $('ul li#'+listid).addClass('active');
-        this.setPrevAndNextBtnClass(listid);
+    handleRemoveGameFromWishlist(gameObj){
+        fetch(`http://localhost:8080/api/removeGame/${this.state.userId._id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gameObj)
+        })
+        .then(data => data.json())
+        .then(res => {
+            this.setState({userId: res});
+            console.log(res);
+        })
+        .catch(err => console.log(err));;
     }
 
-    setPrevAndNextBtnClass(listid) {
-        let totalPage = Math.ceil(this.state.games.length / this.state.gamesPerPage);
-        this.setState({isNextBtnActive: 'disable'});
-        this.setState({isPrevBtnActive: 'disable' });
-        if(totalPage === listid && totalPage > 1){
-            this.setState({isPrevBtnActive: ''});
-        }
-        else if(listid === 1 && totalPage > 1){
-            this.setState({isNextBtnActive: ''});
-        }
-        else if(totalPage > 1){
-            this.setState({isNextBtnActive: ''});
-            this.setState({isPrevBtnActive: ''});
-        }
+    handlePageClick(currentPage, currentNo){
+        this.setState({currentPageGames: currentPage});
+        this.setState({currentPageNo: currentNo});
+        this.setState({pageIsClicked: true});
+        console.log(currentPage);
+        console.log(currentNo);
     }
-
-    btnIncrementClick() {
-        this.setState({upperPageBound: this.state.upperPageBound + this.state.pageBound});
-        this.setState({lowerPageBound: this.state.lowerPageBound + this.state.pageBound});
-        let listid = this.state.upperPageBound + 1;
-        this.setState({ currentPage: listid});
-        this.setPrevAndNextBtnClass(listid);
-    }
-
-    btnDecrementClick() {
-        this.setState({upperPageBound: this.state.upperPageBound - this.state.pageBound});
-        this.setState({lowerPageBound: this.state.lowerPageBound - this.state.pageBound});
-        let listid = this.state.upperPageBound - this.state.pageBound;
-        this.setState({ currentPage: listid});
-        this.setPrevAndNextBtnClass(listid);
-    }
-
-    btnPrevClick() {
-        if((this.state.currentPage -1)%this.state.pageBound === 0 ){
-            this.setState({upperPageBound: this.state.upperPageBound - this.state.pageBound});
-            this.setState({lowerPageBound: this.state.lowerPageBound - this.state.pageBound});
-        }
-        let listid = this.state.currentPage - 1;
-        this.setState({ currentPage : listid});
-        this.setPrevAndNextBtnClass(listid);
-    }
-
-    btnNextClick() {
-        if((this.state.currentPage +1) > this.state.upperPageBound ){
-            this.setState({upperPageBound: this.state.upperPageBound + this.state.pageBound});
-            this.setState({lowerPageBound: this.state.lowerPageBound + this.state.pageBound});
-        }
-        let listid = this.state.currentPage + 1;
-        this.setState({ currentPage : listid});
-        this.setPrevAndNextBtnClass(listid);
-    }
-    */
 
     //handle Price Filter Changes
     handleSliderChange(range){
@@ -270,57 +265,19 @@ class GameSearch extends React.Component{
 
         let loading;
         if (this.state.isLoading){
-            loading = <p>Your result is loading...</p>
+            loading = 
+            <div>
+                <div class="d-flex justify-content-center">
+                    <h4>Loading...</h4>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
         }
         else loading = <></>;
-
-        /* Page Numbering
-
-        const indexOfLastGame = this.state.currentPage * this.state.gamesPerPage;
-        const indexOfFirstGame = indexOfLastGame - this.state.gamesPerPage;
-        const currentGames = this.state.games.slice(indexOfFirstGame, indexOfLastGame);
-
-        const pageNumbers = [];
-        for (let i = 1; i <= Math.ceil(this.state.games.length / this.state.gamesPerPage); i++) {
-            pageNumbers.push(i);
-        }
-
-        const renderPageNumbers = pageNumbers.map(number => {
-            if(number === 1 && this.state.currentPage === 1){
-                return(
-                    <li key={number} className='active' id={number}><a href='#' id={number} onClick={this.handlePageClick}>{number}</a></li>
-                )
-            }
-            else if((number < this.state.upperPageBound + 1) && number > this.state.lowerPageBound){
-                return(
-                    <li key={number} id={number}><a href='#' id={number} onClick={this.handlePageClick}>{number}</a></li>
-                )
-            }
-        });
-
-        let pageIncrementBtn = null;
-        if(pageNumbers.length > this.state.upperPageBound){
-            pageIncrementBtn = <li className=''><a href='#' onClick={this.btnIncrementClick}> &hellip; </a></li>
-        }
-        let pageDecrementBtn = null;
-        if(this.state.lowerPageBound >= 1){
-            pageDecrementBtn = <li className=''><a href='#' onClick={this.btnDecrementClick}> &hellip; </a></li>
-        }
-        let renderPrevBtn = null;
-        if(this.state.isPrevBtnActive === 'disabled') {
-            renderPrevBtn = <li className={this.state.isPrevBtnActive}><span id="btnPrev"> Prev </span></li>
-        }
-        else{
-            renderPrevBtn = <li className={this.state.isPrevBtnActive}><a href='#' id="btnPrev" onClick={this.btnPrevClick}> Prev </a></li>
-        }
-        let renderNextBtn = null;
-        if(this.state.isNextBtnActive === 'disabled') {
-            renderNextBtn = <li className={this.state.isNextBtnActive + "btn-secondary"}><span id="btnNext"> Next </span></li>
-        }
-        else{
-            renderNextBtn = <li className={this.state.isNextBtnActive}><a href='#' id="btnNext" onClick={this.btnNextClick}> Next </a></li>
-        }
-        */
 
         return(
             <div>
@@ -352,16 +309,8 @@ class GameSearch extends React.Component{
                 </div>
                 
                 {loading}
-                <DisplayContent searchBtnClicked={this.state.searchBtnClicked} priceRange={this.state.priceRange} sortBy={this.state.sortBy} search={this.state.search.replaceAll('%20', ' ')} storeFilter={this.state.storeFilter} onSale={this.state.onSaleFilter} isEmpty={this.state.isEmpty} isLoading={this.state.isLoading} games={this.state.games} stores={this.state.stores} deals={this.state.deals}/>
-                {/*
-                <ul id="page-numbers" className="pagination">
-                  {renderPrevBtn}
-                  {pageDecrementBtn}
-                  {renderPageNumbers}
-                  {pageIncrementBtn}
-                  {renderNextBtn}
-                </ul>
-                */}
+                <DisplayContent handleRemoveGameFromWishlist={this.handleRemoveGameFromWishlist} handleAddGameToWishList={this.handleAddGameToWishList} loggedIn={this.state.loggedIn} user={this.state.userId} currentPageNo={this.state.currentPageNo} pageIsClicked={this.state.pageIsClicked} currentPageGames={this.state.currentPageGames} handlePageClick={this.handlePageClick} searchBtnClicked={this.state.searchBtnClicked} priceRange={this.state.priceRange} sortBy={this.state.sortBy} search={this.state.search.replaceAll('%20', ' ')} storeFilter={this.state.storeFilter} onSale={this.state.onSaleFilter} isEmpty={this.state.isEmpty} isLoading={this.state.isLoading} games={this.state.games} stores={this.state.stores} deals={this.state.deals}/>
+                
             </div>
         );
     }
@@ -428,15 +377,105 @@ const Filter = (props) => {
     )
 }
 
+const PageList = (props) => {
+    if (props.active)
+        return <li className="page-item active" key={props.i}><a className="page-link" href="#" id={props.i} onClick={() => props.handlePageClick(props.i)}>{props.i + 1}</a></li>
+    else 
+        return <li className="page-item" key={props.i}><a className="page-link" href="#" id={props.i} onClick={() => props.handlePageClick(props.i)}>{props.i + 1}</a></li>
+}
+
 const DisplayContent = (props) => {
+    //console.log(props.user);
     if (!props.isEmpty){
+        var games = [...props.games];
+        let indexToBeRemoved = [];
+        for(let i = 0; i < games.length; ++i){
+            let flag = false;
+            for(let j = 0; j < props.deals.length; ++j){
+                if (games[i].gameID == props.deals[j].gameInfo.gameID){
+                    flag = true;
+                }
+            }
+            if (!flag){
+                indexToBeRemoved.push(i);
+            }
+        }
+        //console.log(games);
+        //console.log(props.deals);
+        //console.log(indexToBeRemoved);
+        for(let i = indexToBeRemoved.length - 1; i > 0; --i){
+            games.splice(indexToBeRemoved[i], 1);
+        }
+        //console.log(games);
+        var noOfGames = games.length;
+        var noOfPages = Math.ceil(noOfGames / 10);
+
+        var currentPage = games.slice(0, noOfGames > 10 ? 10 : games.length);
+        var currentNo = props.currentPageNo;
+        
+        const handlePageClick = (pageNo) => {
+            currentPage = games.slice(pageNo * 10, (pageNo + 1 == noOfPages ? games.length : pageNo * 10 + 10));
+            //console.log("don't call this yet");
+            //console.log(pageNo);
+            //console.log(props.currentPageGames);
+            props.handlePageClick(currentPage, pageNo);
+        }
+
+        const handlePrevPageClick = () => {
+            if(currentNo > 0){
+                currentPage = games.slice(--currentNo * 10, (currentNo + 1 == noOfPages ? games.length : currentNo * 10 + 10));
+                props.handlePageClick(currentPage, currentNo);
+            }
+        }
+
+        const handleNextPageClick = () => {
+            console.log(currentNo);
+            if (currentNo < noOfPages - 1){
+                currentPage = games.slice(++currentNo * 10, (currentNo + 1 == noOfPages ? games.length : currentNo * 10 + 10));
+                props.handlePageClick(currentPage, currentNo);
+            }
+        }
+
+        const Pages = (props) => {
+            let pages = [];
+            for(let i = 0; i < noOfPages; i++){
+                
+                let isActive = false;
+                if (i == props.currentPageNo)
+                    isActive = true;
+                pages.push(<PageList i={i} active={isActive} handlePageClick={props.handlePageClick}></PageList>)
+            }
+            return (pages);
+        };
+        
+        
         return( 
-            <div className="mt-3">
+            <div className="mt-3"> 
+                { noOfPages > 1 &&                
+                <nav aria-label="Page navigation example">
+                    <ul className="pagination">
+                        <li className={"page-item" + (props.currentPageNo == 0 ? " disabled" : "")}>
+                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePrevPageClick()}>
+                            <span aria-hidden="true">&laquo;</span>
+                            <span className="sr-only">Previous</span>
+                        </a>
+                        </li>
+                        <Pages currentPageNo={props.currentPageNo} handlePageClick={handlePageClick}/>
+                        <li className={"page-item" + (props.currentPageNo == noOfPages - 1 ? " disabled" : "")}>
+                        <a className="page-link" href="#" aria-label="Next" onClick={() => handleNextPageClick()}>
+                            <span aria-hidden="true">&raquo;</span>
+                            <span className="sr-only">Next</span>
+                        </a>
+                        </li>
+                    </ul>
+                    <p>Showing {props.currentPageNo * 10 + 1} - {props.currentPageNo != noOfPages - 1? props.currentPageNo * 10 + 10 : noOfGames} of {noOfGames} results</p>
+                </nav>
+                }
                 <h4>Search results:</h4>
                 <table className="table table-striped">
                     <TableHeader />
-
-                    <TableBody games={props.games} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>
+                    {props.pageIsClicked && <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={props.currentPageGames} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>}
+                    {!props.pageIsClicked && <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={currentPage} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>}
                 </table>
             </div>
         )
@@ -444,9 +483,9 @@ const DisplayContent = (props) => {
         return <></>;
     }
     else return( 
-            <div>
-                No Games Found!
-            </div>
+        <div>
+            No Games Found!
+        </div>
     )
 };
 
@@ -460,6 +499,7 @@ const TableHeader = () =>{
                 <th>Cheapest Sale Price</th>
                 <th>Retail Price</th>
                 <th>Saved Amounts</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
     )
@@ -467,22 +507,6 @@ const TableHeader = () =>{
 
 const TableBody = (props) => {
     var games = [...props.games];
-    let indexToBeRemoved = [];
-    for(let i = 0; i < games.length; ++i){
-        let flag = false;
-        for(let j = 0; j < props.deals.length; ++j){
-            if (games[i].gameID == props.deals[j].gameInfo.gameID){
-                flag = true;
-            }
-        }
-        if (!flag){
-            indexToBeRemoved.push(i);
-        }
-    }
-    //console.log(indexToBeRemoved);
-    for(let i = indexToBeRemoved.length - 1; i > 0; --i){
-        games.splice(indexToBeRemoved[i], 1);
-    }
     switch(props.sortBy){
         case "1":
             games.sort((a, b) => (a.external > b.external) ? 1 : (a.external < b.external) ? -1 : 0);
@@ -504,16 +528,11 @@ const TableBody = (props) => {
                         deal2 = props.deals[i];
                     }
                 }
-                console.log(a.external);
-                console.log(deal1);
-                console.log(b.external);
-                console.log(deal2);
                 if (deal1 && deal2)
                     return (deal1.gameInfo.retailPrice - deal2.gameInfo.retailPrice);
                 //else 
                     //return 0;
             });
-            console.log(games);
             break;
         case "4":
             
@@ -536,6 +555,7 @@ const TableBody = (props) => {
         case "0":
             break;
     }
+    //console.log("No of Games: " + games.length);
     const rows = games.map((game, index)=>{
         var store = {};
         var deal = {};
@@ -561,7 +581,7 @@ const TableBody = (props) => {
                         if ((deal.gameInfo.salePrice > props.priceRange[0] && deal.gameInfo.salePrice < props.priceRange[1]) && (inFilter || props.storeFilter.length == 0) && (!props.onSale || deal.gameInfo.salePrice < deal.gameInfo.retailPrice))
                         {   
                                                                               
-                            return (<TableRow game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
+                            return (<TableRow handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
                         }
                     }
                 }
@@ -599,14 +619,63 @@ const TableRow = (props) =>{
     })
     .then(res => {
         //console.log(res);
-    }).catch(err => console.log(err)).catch(err => console.log(err));
+    }).catch(err => 
+        {});//console.log(err)).catch(err => console.log(err));
+
+    const notifyAdd = (gameObj) => {
+        toast.success(
+            <div className="media">
+                <img src={gameObj.thumb} className="align-self-center mr-3" width={40} height={40}></img>
+                <p className="media-body">{gameObj.name} has been added to your wishlist.</p>
+            </div>);
+    }
+    const notifyRemoved = (gameObj) => {
+        toast.error(
+            <div className="media">
+                <img src={gameObj.thumb} className="align-self-center mr-3" width={40} height={40}></img>
+                <p className="media-body">{gameObj.name} has been removed from your wishlist.</p>
+            </div>);
+    }
+    
+    const handleAddGameToWishList = (gameObj) => {
+        var heart = document.getElementById('heart' + gameObj.gameID);
+        heart.classList.remove("fa-heart-o");
+        heart.classList.add("fa-heart");
+        console.log(gameObj);
+        props.handleAddGameToWishList(gameObj);
+        notifyAdd(gameObj);
+    }
+
+    const handleRemoveGameFromWishlist = (gameObj) => {
+        var heart = document.getElementById('heart' + gameObj.gameID);
+        heart.classList.remove("fa-heart");
+        heart.classList.add("fa-heart-o");
+        props.handleRemoveGameFromWishlist(gameObj);
+        notifyRemoved(gameObj);
+    }
 
     let flag = false;
+    let isInWishlist = false;
     let save = 0;
     if (props.deal.gameInfo){
         flag = true;
         save = -(props.deal.gameInfo.salePrice - props.deal.gameInfo.retailPrice) / props.deal.gameInfo.retailPrice * 100;
     }
+    if(props.loggedIn){
+        for(let i = 0; i < props.user.wishlistedGames.length; ++i){
+            if (props.user.wishlistedGames[i].gameID == g.gameID)
+                isInWishlist = true;
+        }
+    }
+    const popover = (
+        <Popover id="popover-basic">
+          <Popover.Title as="h3">Wanna follow this game?</Popover.Title>
+          <Popover.Content>
+            Log in or create an account now to add it to your wishlist
+          </Popover.Content>
+        </Popover>
+    );
+
     if (flag){
         return(
             <tr>
@@ -619,6 +688,17 @@ const TableRow = (props) =>{
                 <td>{props.deal.gameInfo.salePrice}$</td>
                 <td>{props.deal.gameInfo.retailPrice}$</td>
                 <td>{save.toFixed(2)}% ({-(props.deal.gameInfo.retailPrice - props.deal.gameInfo.salePrice).toFixed(2)}$)</td>
+                <td>
+                    {!props.loggedIn &&
+                        <OverlayTrigger trigger="click" placement="right" overlay={popover} delay={{ show: "250", hide: "400" }}>
+                            <i class="fa fa-heart-o"></i>
+                        </OverlayTrigger>
+                    }
+                    {(props.loggedIn && !isInWishlist) &&
+                    <i class="fa fa-heart-o" id={"heart"+g.gameID} onClick={() => handleAddGameToWishList(props.deal.gameInfo)}></i>}
+                    {(props.loggedIn && isInWishlist) &&
+                    <i class="fa fa-heart" id={"heart"+g.gameID} onClick={() => handleRemoveGameFromWishlist(props.deal.gameInfo)}></i>}
+                </td>
             </tr>
         );
     }
