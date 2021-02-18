@@ -265,7 +265,17 @@ class GameSearch extends React.Component{
 
         let loading;
         if (this.state.isLoading){
-            loading = <p>Your result is loading...</p>
+            loading = 
+            <div>
+                <div class="d-flex justify-content-center">
+                    <h4>Loading...</h4>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
         }
         else loading = <></>;
 
@@ -680,7 +690,7 @@ const TableRow = (props) =>{
                 <td>{save.toFixed(2)}% ({-(props.deal.gameInfo.retailPrice - props.deal.gameInfo.salePrice).toFixed(2)}$)</td>
                 <td>
                     {!props.loggedIn &&
-                        <OverlayTrigger trigger="click" placement="right" overlay={popover} delay={{ show: 250, hide: 400 }}>
+                        <OverlayTrigger trigger="click" placement="right" overlay={popover} delay={{ show: "250", hide: "400" }}>
                             <i class="fa fa-heart-o"></i>
                         </OverlayTrigger>
                     }
