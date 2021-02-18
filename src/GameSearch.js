@@ -69,7 +69,8 @@ class GameSearch extends React.Component{
     handleSearch(e) {
         //console.log(e.target.value);
 
-        this.setState({games: [], deals: [], isLoading: true, isEmpty: true, searchBtnClicked: true});
+        this.setState({games: [], deals: [], isLoading: true, isEmpty: true, searchBtnClicked: true, currentPageGames: [],
+            currentPageNo: 0});
 
         if (!this.state.search == ""){
             
@@ -90,7 +91,8 @@ class GameSearch extends React.Component{
                     this.setState({isEmpty: false});
                 }
                 //console.log(this.state.games);
-
+                var currentPage = this.state.games.length > 10 ? this.state.games.slice(0, 10) : this.state.games.slice(0, this.state.games.length);
+                this.setState({currentPageGames: currentPage});
                 //fetch deals
                 this.state.games.map((game, index)=>{
                     fetch(`https://www.cheapshark.com/api/1.0/deals?id=${game.cheapestDealID}`)
@@ -164,10 +166,11 @@ class GameSearch extends React.Component{
     };
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ loggedIn: nextProps.loggedIn });  
+        this.setState({ loggedIn: nextProps.loggedIn }); 
+        this.setState({userId: nextProps.user}) 
       }
 
-    handleAddGameToWishList(gameObj, user){
+    handleAddGameToWishList(gameObj){
         //console.log(user);
         fetch(`http://localhost:8080/api/addGame/${this.state.userId._id}`, {
             method: 'PUT',
@@ -472,10 +475,11 @@ const DisplayContent = (props) => {
                 </nav>
                 }
                 <h4>Search results:</h4>
-                <table className="table table-striped">
+                <table className="table">
                     <TableHeader />
-                    {props.pageIsClicked && <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={props.currentPageGames} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>}
-                    {!props.pageIsClicked && <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={currentPage} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>}
+                    <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={props.currentPageGames} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>
+                    {//!props.pageIsClicked && <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={currentPage} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>
+                    }
                 </table>
             </div>
         )
@@ -671,7 +675,7 @@ const TableRow = (props) =>{
         <Popover id="popover-basic">
           <Popover.Title as="h3">Wanna follow this game?</Popover.Title>
           <Popover.Content>
-            Log in or create an account now to add it to your wishlist
+            <a href="#exampleInputEmail1">Log in</a> or <Link to='register'>create an account</Link> now to receive price alert
           </Popover.Content>
         </Popover>
     );
