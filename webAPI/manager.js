@@ -629,8 +629,20 @@ module.exports = function() {
                 })
                 .catch(error => console.log('error', error));
             })
-        }
+        },
         
+        //Updates theme on mongo to dark/light
+        updateTheme: function(userId, body) {
+            console.log("Received: " + userId + " "+ body);
+            return new Promise((resolve, reject) => {
+                users.findByIdAndUpdate(userId, {theme: body}, {new: true}, (err, result) => {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(result);
+                })
+            }
+        )}
     }
 
 }   
