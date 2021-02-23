@@ -1,4 +1,4 @@
-## (February 22th, 2021)
+## (February 22nd, 2021)
 ### Added Recent View Game List
 * Changed the Top Viewed games component to also show a recent viewed games.
 * Changed the backend to handle requests relating to the recent viewed games.
