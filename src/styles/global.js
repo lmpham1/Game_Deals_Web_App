@@ -76,6 +76,17 @@ export const GlobalStyles = createGlobalStyle`
     text-align: center;
     margin: 40px;
   }
+
+  .search-btn{
+    background-color: #008CBA;
+    border-radius: 4px;
+    margin: 4px;
+    border: none;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    padding: 4px;
+  }
   `;
 
   export default GlobalStyles;

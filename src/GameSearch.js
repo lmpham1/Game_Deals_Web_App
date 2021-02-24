@@ -326,7 +326,7 @@ class GameSearch extends React.Component{
             <div>
                 <div className="form-inline d-flex md-form form-sm mt-0 justify-content-center mb-2">
                         <input className="form-control-sm" style={{width: "93%"}} value={this.state.search.replaceAll('%20', ' ')} type="text" placeholder="Search for a game title" aria-label="Search" name="search" onChange={this.handleChange}/>
-                        <input type="submit" className="fas fa-search ml-2" value="Search" onClick={this.handleSearch}/>
+                        <input type="submit" className="search-btn" value="Search" onClick={this.handleSearch}/>
                 </div>
                 
                 <div className="float-right form-inline">
