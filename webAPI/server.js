@@ -150,6 +150,18 @@ app.put('/api/history/pop/:id', (req, res) => {
   })
 })
 
+//Saves theme
+app.put('/api/updateTheme/:id', (req, res) => {
+  console.log("This is passed: " + req.body.theme);
+  m.updateTheme(req.params.id, req.body.theme)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+    res.status(500).json({"message":error});
+  })
+})
+
 // display all games in search history
 app.get('/api/history/:id', (req, res) => {
   m.getHistory(req.params.id)

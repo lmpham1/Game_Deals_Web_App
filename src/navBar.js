@@ -4,6 +4,8 @@ import { Switch, Route, Link, Redirect, withRouter } from "react-router-dom";
 import $ from 'jquery';
 import Axios from 'axios';
 import './App.css';
+import Toggle from "react-toggle";
+
 
 class NavBar extends React.Component {
 
@@ -16,10 +18,9 @@ class NavBar extends React.Component {
             loginPassword: "",
             data: null,
             isOpen: false,
-            isLoading: false
+            isLoading: false,
+            theme: ""
         }
-        console.log("This")
-        console.log(props)
     }
 
 
@@ -43,7 +44,6 @@ class NavBar extends React.Component {
         });
     }
 
-
     render() {
         const login = () => {
             this.setState({isLoading: true});
@@ -63,7 +63,7 @@ class NavBar extends React.Component {
                     this.setState({ data: res.data });
                     //this.setState(this.state);
                     this.setState({ loggedIn: true });
-
+                    window.location.reload(false);
                     this.props.handleLogin();
                     //this.props.history.push("/");
                 }
@@ -86,12 +86,14 @@ class NavBar extends React.Component {
             }).then((res) => {
                 this.setState({ loginUsername: "" });
                 this.setState({ loggedIn: false });
+                window.location.reload(false);
                 this.props.handleLogout();
                 //this.forceUpdate();
             });
         };
+        
         return (
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-lg">
                 <a class="navbar-brand" href="/">Game Deals</a>
 
                 <div class="collapse navbar-collapse" id="navbarNav">

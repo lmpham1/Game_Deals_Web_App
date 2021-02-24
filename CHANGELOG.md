@@ -1,3 +1,9 @@
+## (February 22nd, 2021)
+### Added Recent View Game List
+* Changed the Top Viewed games component to also show a recent viewed games.
+* Changed the backend to handle requests relating to the recent viewed games.
+* Add backend functionality to get only the top 10 most viewed games in the last 30 days, decreasing the weight of the view count for each day it passed.
+
 ## (February 17th, 2021)
 ### Added some functionalities to Game Search component
 * Created an "Add to wishlist" button for each game in the search result
