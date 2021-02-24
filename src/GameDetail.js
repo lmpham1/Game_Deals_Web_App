@@ -70,8 +70,8 @@ class GameDetail extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ loggedIn: nextProps.loggedIn });  
-    this.setState({ userId: nextProps.user})
+    //this.setState({ loggedIn: nextProps.loggedIn });  
+    //this.setState({ userId: nextProps.user})
   }
 
   componentDidMount() {

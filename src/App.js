@@ -111,13 +111,13 @@ class App extends Component {
         <hr />
 
         <Switch>
-          <Route exact path='/' render={() => (<Home loggedIn={this.state.loggedIn} user={this.state.user}/>)} />
+          <Route exact path='/' render={() => (<Home/>)} />
           <Route exact path='/about' render={() => (<About />)} />
           <Route exact path='/history' render={() => (<History />)} />
           <Route exact path='/register' render={() => (<Register redirect={this.state.redirect}/>)} />
           <Route exact path='/loginOk' render={() => (<LoginOk />)} />
           <Route exact path='/wishlist' render={() => (<Whishlist loggedIn={this.state.loggedIn} />)} />
-          <Route exact path='/game-detail/:id' render={(props) => (<GameDetail id={props.match.params.id} loggedIn={this.state.loggedIn} user={this.state.user}/>)} />
+          <Route exact path='/game-detail/:id' render={(props) => (<GameDetail id={props.match.params.id}/>)} />
         </Switch>
       </div>
     )

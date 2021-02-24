@@ -166,8 +166,8 @@ class GameSearch extends React.Component{
     };
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ loggedIn: nextProps.loggedIn }); 
-        this.setState({userId: nextProps.user}) 
+        //this.setState({userId: nextProps.user}) ;
+        //this.setState({ loggedIn: nextProps.loggedIn }); 
       }
 
     handleAddGameToWishList(gameObj){
@@ -665,7 +665,7 @@ const TableRow = (props) =>{
         flag = true;
         save = -(props.deal.gameInfo.salePrice - props.deal.gameInfo.retailPrice) / props.deal.gameInfo.retailPrice * 100;
     }
-    if(props.loggedIn){
+    if(props.loggedIn && props.user){
         for(let i = 0; i < props.user.wishlistedGames.length; ++i){
             if (props.user.wishlistedGames[i].gameID == g.gameID)
                 isInWishlist = true;
