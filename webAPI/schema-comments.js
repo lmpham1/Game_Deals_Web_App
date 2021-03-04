@@ -11,6 +11,8 @@ var commentsSchema = new Schema({
     userFName: {type: String, required: true},
     userLName: {type: String, required: true},
     upVote: {type: Number, default: 0},
+    userLikes: [],
+    userDislikes: [],
     downVote: {type: Number, default: 0},
 })
 

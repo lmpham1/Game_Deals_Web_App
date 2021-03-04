@@ -271,7 +271,6 @@ class GameDetail extends React.Component {
                 <p class = "pull-right"><strong>Word Count:</strong> {this.state.commentInput.length}/280</p>
                 <div class = "submitForm">
                 <button disabled={this.state.commentInput == ''} class="btn btn-primary btn-lg" id = "submitBtn" role="button">Submit</button>
-                <button onClick = {"this.setState({commentInput: ''});"} class="btn btn-secondary btn-lg">Cancel</button>
                 </div>
               </div>
             </form>
@@ -279,6 +278,7 @@ class GameDetail extends React.Component {
           </div>
         );
       }
+      //<button onClick = {"this.setState({commentInput: ''});"} class="btn btn-secondary btn-lg">Cancel</button>
       else {
         return (
           <div>
@@ -350,6 +350,18 @@ const SingleCommentView = (props) => {
         </div>
         <p id = "commentTxt">{props.item.comment}</p>
         <ul class="list-inline d-sm-flex my-0">
+        <li class="list-inline-item g-mr-20">
+                  <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">
+                    <i class="fa fa-arrow-up g-pos-rel g-top-1 g-mr-3"></i>
+                    0
+                  </a>
+                </li>
+                <li class="list-inline-item g-mr-20">
+                  <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">
+                    <i class="fa fa-arrow-down g-pos-rel g-top-1 g-mr-3"></i>
+                    0
+                  </a>
+                </li>
           {props.userId == props.item.userId && <li class="list-inline-item ml-auto">
             <a onClick={() => props.removeComment(props.gameId, props.item._id, props.index, props.comments, props.forceUpdate)} role="button" class="text-muted">Remove</a>
           </li>}
