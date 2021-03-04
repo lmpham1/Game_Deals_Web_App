@@ -8,6 +8,8 @@ import Button from 'react-bootstrap/Button';
 import Popover from 'react-bootstrap/Popover';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import {toast} from 'react-toastify';
+import {FacebookShareButton, TwitterShareButton} from "react-share";
+import {FacebookIcon, TwitterIcon} from "react-share";
 import './App.css';
 
 class GameSearch extends React.Component{
@@ -32,6 +34,9 @@ class GameSearch extends React.Component{
 
         this.handleAddGameToWishList = this.handleAddGameToWishList.bind(this);
         this.handleRemoveGameFromWishlist = this.handleRemoveGameFromWishlist.bind(this);
+
+        this.handleCopy = this.handleCopy.bind(this);
+        this.notifyCopy = this.notifyCopy.bind(this);
     }
 
     state = { 
@@ -123,6 +128,13 @@ class GameSearch extends React.Component{
         }
         //end of if statement
     } //end of handleSearch
+
+    //For the copy to clipboard button
+    handleCopy(gameObj) {
+        console.log(gameObj);
+        navigator.clipboard.writeText(window.location.href + "game-detail/" + gameObj.gameID);
+        this.notifyCopy(gameObj);
+    }
 
     componentDidUpdate(){
         
@@ -260,6 +272,14 @@ class GameSearch extends React.Component{
         this.setState({ priceRange: [0, 500], onSaleFilter: false, storeFilter: [], saveChangesClicked: false })
     }
 
+    notifyCopy = (gameObj) => {
+        toast.success(
+            <div className="media">
+                <img src={gameObj.thumb} className="align-self-center mr-3" width={40} height={40}></img>
+                <p className="media-body">{gameObj.name} page has been copied to your clipboard.</p>
+            </div>);
+    }
+
     render(){
         if (this.state.search != "")
             document.title = "Search results for \"" + this.state.search.replace('%20', " ") + "\"";
@@ -312,8 +332,7 @@ class GameSearch extends React.Component{
                 </div>
                 
                 {loading}
-                <DisplayContent handleRemoveGameFromWishlist={this.handleRemoveGameFromWishlist} handleAddGameToWishList={this.handleAddGameToWishList} loggedIn={this.state.loggedIn} user={this.state.userId} currentPageNo={this.state.currentPageNo} pageIsClicked={this.state.pageIsClicked} currentPageGames={this.state.currentPageGames} handlePageClick={this.handlePageClick} searchBtnClicked={this.state.searchBtnClicked} priceRange={this.state.priceRange} sortBy={this.state.sortBy} search={this.state.search.replaceAll('%20', ' ')} storeFilter={this.state.storeFilter} onSale={this.state.onSaleFilter} isEmpty={this.state.isEmpty} isLoading={this.state.isLoading} games={this.state.games} stores={this.state.stores} deals={this.state.deals}/>
-                
+                <DisplayContent handleRemoveGameFromWishlist={this.handleRemoveGameFromWishlist} handleAddGameToWishList={this.handleAddGameToWishList} handleCopy={this.handleCopy} loggedIn={this.state.loggedIn} user={this.state.userId} currentPageNo={this.state.currentPageNo} pageIsClicked={this.state.pageIsClicked} currentPageGames={this.state.currentPageGames} handlePageClick={this.handlePageClick} searchBtnClicked={this.state.searchBtnClicked} priceRange={this.state.priceRange} sortBy={this.state.sortBy} search={this.state.search.replaceAll('%20', ' ')} storeFilter={this.state.storeFilter} onSale={this.state.onSaleFilter} isEmpty={this.state.isEmpty} isLoading={this.state.isLoading} games={this.state.games} stores={this.state.stores} deals={this.state.deals}/>
             </div>
         );
     }
@@ -477,7 +496,7 @@ const DisplayContent = (props) => {
                 <h4>Search results:</h4>
                 <table className="table">
                     <TableHeader />
-                    <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={props.currentPageGames} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>
+                    <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} handleCopy={props.handleCopy} loggedIn={props.loggedIn} user={props.user} games={props.currentPageGames} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>
                     {//!props.pageIsClicked && <TableBody handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} games={currentPage} sortBy={props.sortBy} stores={props.stores} deals={props.deals} priceRange={props.priceRange} storeFilter={props.storeFilter} onSale={props.onSale}/>
                     }
                 </table>
@@ -503,6 +522,8 @@ const TableHeader = () =>{
                 <th>Cheapest Sale Price</th>
                 <th>Retail Price</th>
                 <th>Saved Amounts</th>
+                <th>Wishlist</th>
+                <th>Share</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
@@ -585,7 +606,7 @@ const TableBody = (props) => {
                         if ((deal.gameInfo.salePrice > props.priceRange[0] && deal.gameInfo.salePrice < props.priceRange[1]) && (inFilter || props.storeFilter.length == 0) && (!props.onSale || deal.gameInfo.salePrice < deal.gameInfo.retailPrice))
                         {   
                                                                               
-                            return (<TableRow handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} loggedIn={props.loggedIn} user={props.user} game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
+                            return (<TableRow handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} handleCopy ={props.handleCopy} loggedIn={props.loggedIn} user={props.user} game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
                         }
                     }
                 }
@@ -703,6 +724,26 @@ const TableRow = (props) =>{
                     {(props.loggedIn && isInWishlist) &&
                     <i class="fa fa-heart" id={"heart"+g.gameID} onClick={() => handleRemoveGameFromWishlist(props.deal.gameInfo)}></i>}
                 </td>
+                    <td class="share-cell">
+                        <TwitterShareButton
+                            url={window.location.href + "game-detail/" + g.gameID}
+                            title={"Check out this amazing deal on " + props.deal.gameInfo.name + ": "}
+                            >
+                            <TwitterIcon
+                            size={30}
+                            round />
+                        </TwitterShareButton>
+                        <FacebookShareButton
+                            // url={window.location.href + "game-detail/" + g.gameID}
+                            url="www.google.ca"
+                            quote={"Check out this amazing deal on " + props.deal.gameInfo.name + ": " + window.location.href + "game-detail/" + g.gameID}
+                            >
+                            <FacebookIcon
+                            size={30}
+                            round />
+                        </FacebookShareButton>
+                        <button type="button" class="btn btn-default btn-circle" onClick={()=>props.handleCopy(g)}><i class="fa fa-copy"></i></button>
+                    </td>
             </tr>
         );
     }
