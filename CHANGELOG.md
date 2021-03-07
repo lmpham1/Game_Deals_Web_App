@@ -1,3 +1,9 @@
+## (March 7th, 2021)
+### Added like/dislike functionality to Game Details Component
+* Implemented backend code to like/unlike comments
+* Added buttons in the comments component
+* Successfully like/unlike comments and incremenet/decrement without refreshing the page
+
 ## (February 22nd, 2021)
 ### Added Recent View Game List
 * Changed the Top Viewed games component to also show a recent viewed games.
