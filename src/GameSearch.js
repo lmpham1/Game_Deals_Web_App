@@ -531,6 +531,31 @@ const TableHeader = () =>{
 }
 
 const TableBody = (props) => {
+    const clickHandler = (g) =>{
+        let temp = {}
+        temp["date"] = new Date().setHours(0,0,0,0);
+        temp["views"] = 1;
+        console.log(temp)
+        fetch(`http://localhost:8080/api/db/updateGameView/${g}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(temp)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                else
+                    throw Error("HTTP 404, Not Found");
+            }).then((json) => {
+
+            }).catch((err) => {
+                console.log("ERROR" + err)
+            })
+        
+}
     var games = [...props.games];
     switch(props.sortBy){
         case "1":
@@ -606,7 +631,7 @@ const TableBody = (props) => {
                         if ((deal.gameInfo.salePrice > props.priceRange[0] && deal.gameInfo.salePrice < props.priceRange[1]) && (inFilter || props.storeFilter.length == 0) && (!props.onSale || deal.gameInfo.salePrice < deal.gameInfo.retailPrice))
                         {   
                                                                               
-                            return (<TableRow handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} handleCopy ={props.handleCopy} loggedIn={props.loggedIn} user={props.user} game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
+                            return (<TableRow handleLinkClick={clickHandler} handleRemoveGameFromWishlist={props.handleRemoveGameFromWishlist} handleAddGameToWishList={props.handleAddGameToWishList} handleCopy ={props.handleCopy} loggedIn={props.loggedIn} user={props.user} game={game} key={index} store={store} deal={deal} onSale={props.onSale}/>)
                         }
                     }
                 }
@@ -704,8 +729,8 @@ const TableRow = (props) =>{
     if (flag){
         return(
             <tr>
-                <td><Link to={`/game-detail/${g.gameID}`}><img src={g.thumb} width={40} height={40}/></Link></td>
-                <td><Link to={`/game-detail/${g.gameID}`}>{g.external}</Link></td>
+                <td><Link to={`/game-detail/${g.gameID}`} onClick={()=>props.handleLinkClick(g.gameID)}><img src={g.thumb} width={40} height={40}/></Link></td>
+                <td><Link to={`/game-detail/${g.gameID}`} onClick={()=>props.handleLinkClick(g.gameID)}>{g.external}</Link></td>
                 <td>
                     <a href={`https://www.cheapshark.com/redirect?dealID=${g.cheapestDealID}`}>{props.store.storeName}</a>
 

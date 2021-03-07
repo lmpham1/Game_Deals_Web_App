@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import Axios from 'axios';
 import { withAlert } from 'react-alert';
 import Switch from "react-switch";
-import Toggle from 'react-toggle'
+import { FaGithub, FaCaretUp, FaGripLines, FaCaretDown } from "react-icons/fa";
+import Toggle from 'react-toggle';
 import './App.css';
 
 class Wishlist extends React.Component {
@@ -21,10 +22,13 @@ class Wishlist extends React.Component {
             alertPrice: null,
             alert: null,
             switch: false,
-            change: 0
+            change: 0,
+            sorting: false,
+            sortIcon: false
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSwitch = this.handleSwitch.bind(this);
+        this.handleSort = this.handleSort.bind(this);
     }
 
     handleChange(e) {
@@ -45,7 +49,7 @@ class Wishlist extends React.Component {
 
 
         this.setState({ switch: checked });
-        
+
         if (checked == true) {
             var inputPrice = prompt("Enter alert price");
             CreateAlert(gameID, userID, email, inputPrice);
@@ -54,6 +58,24 @@ class Wishlist extends React.Component {
             DeleteAlert(gameID, userID, email);
             console.log("Switched off!");
         }
+    }
+
+    handleSort(e) {
+        let temp = this.state.wishlistedGames;
+
+        this.setState({ sortIcon: true })
+        if (this.state.sorting) {
+            temp.sort((a, b) => (a.name < b.name) ? 1 : ((b.name < a.name) ? -1 : 0))
+            this.setState({ sorting: false })
+            this.setState({ wishlistedGames: temp })
+            console.log("he")
+        } else {
+            temp.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+            this.setState({ sorting: true })
+            this.setState({ wishlistedGames: temp })
+        }
+
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -160,12 +182,12 @@ class Wishlist extends React.Component {
             this.setState(this.state);
             this.forceUpdate();
         }
-        console.log(this.state);  
+        console.log(this.state);
 
         if (this.state.isLoaded) {
             return (
                 <div>
-                    <DisplayWhislist handleSwitch={this.handleSwitch} forceUpdate={forceUpdate} wishlist={this.state.wishlistedGames} loggedIn={this.props.loggedIn} prices={this.state.gameDeals} userId={this.state.userId} rrows={this.state.rrows} email={this.state.email} alert={this.props.alert} switch={this.state.switch} />
+                    <DisplayWhislist sorting={this.state.sorting} sortIcon={this.state.sortIcon} handleSort = {this.handleSort} handleSwitch={this.handleSwitch} forceUpdate={forceUpdate} wishlist={this.state.wishlistedGames} loggedIn={this.props.loggedIn} prices={this.state.gameDeals} userId={this.state.userId} rrows={this.state.rrows} email={this.state.email} alert={this.props.alert} switch={this.state.switch} />
                 </div>
 
             );
@@ -182,7 +204,7 @@ class Wishlist extends React.Component {
                     <div class="spinner-border" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
-                    </div>
+                </div>
             )
         }
     }
@@ -193,12 +215,12 @@ const DisplayWhislist = (props) => {
     if (props.wishlist.length > 0 && props.loggedIn) {
         return (
             <div>
-                            <h4>Your WishListed Games!</h4>
-                            <table className="table table-striped">
-                                <TableHeader />
-                                <TableBody handleSwitch={props.handleSwitch} forceUpdate={props.forceUpdate} wishlist={props.wishlist} prices={props.prices} userId={props.userId} rrows={props.rrows} email={props.email} alert={props.alert} switch={props.switch}></TableBody>
-                            </table>
-                        </div>
+                <h4>Your WishListed Games!</h4>
+                <table className="table table-striped">
+                    <TableHeader sorting={props.sorting} sortIcon={props.sortIcon} handleSort={props.handleSort} />
+                    <TableBody handleSwitch={props.handleSwitch} forceUpdate={props.forceUpdate} wishlist={props.wishlist} prices={props.prices} userId={props.userId} rrows={props.rrows} email={props.email} alert={props.alert} switch={props.switch}></TableBody>
+                </table>
+            </div>
         )
     } else {
         return (
@@ -209,68 +231,77 @@ const DisplayWhislist = (props) => {
 
 //Function to generate notification alerts
 const CreateAlert = (gameID, userID, email, alertPrice) => {
-                            fetch(`https://www.cheapshark.com/api/1.0/alerts?action=set&email=${email}&gameID=${gameID}&price=${alertPrice}`)
-                                .then(res => {
-                                    if (res.ok) {
-                                        console.log(`http://localhost:8080/api/addPrice/${userID}/${alertPrice}`)
-                                        fetch(`http://localhost:8080/api/addPrice/${userID}/${alertPrice}`, {
-                                            method: 'PUT',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ gameID: gameID })
-                                        }).then(console.log(res))
-                                            .catch(error => { console.log(error) });
-                                        //props.alert.success("Alert created");
-                                    }
-                                    else {
-                                        //props.alert.error("Error: Could not create alert");
-                                    }
-                                })
-                                .catch(error => console.log('error', error));
+    fetch(`https://www.cheapshark.com/api/1.0/alerts?action=set&email=${email}&gameID=${gameID}&price=${alertPrice}`)
+        .then(res => {
+            if (res.ok) {
+                console.log(`http://localhost:8080/api/addPrice/${userID}/${alertPrice}`)
+                fetch(`http://localhost:8080/api/addPrice/${userID}/${alertPrice}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameID: gameID })
+                }).then(console.log(res))
+                    .catch(error => { console.log(error) });
+                //props.alert.success("Alert created");
+            }
+            else {
+                //props.alert.error("Error: Could not create alert");
+            }
+        })
+        .catch(error => console.log('error', error));
 }
 
 //Function to delete notification alerts
 const DeleteAlert = (gameID, userID, email) => {
-                            fetch(`https://www.cheapshark.com/api/1.0/alerts?action=delete&email=${email}&gameID=${gameID}`)
-                                .then(res => {
-                                    if (res.ok) {
-                                        fetch(`http://localhost:8080/api/addPrice/${userID}/null`, {
-                                            method: 'PUT',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ gameID: gameID })
-                                        }).then(console.log(res))
-                                            .catch(error => { console.log(error) });
-                                        //props.alert.success("Your alert has been deleted.");
-                                    }
-                                    else {
-                                        //props.alert.error("Error: Alert could not be deleted.");
-                                    }
-                                })
-                                .catch(error => console.log('error', error));
+    fetch(`https://www.cheapshark.com/api/1.0/alerts?action=delete&email=${email}&gameID=${gameID}`)
+        .then(res => {
+            if (res.ok) {
+                fetch(`http://localhost:8080/api/addPrice/${userID}/null`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameID: gameID })
+                }).then(console.log(res))
+                    .catch(error => { console.log(error) });
+                //props.alert.success("Your alert has been deleted.");
+            }
+            else {
+                //props.alert.error("Error: Alert could not be deleted.");
+            }
+        })
+        .catch(error => console.log('error', error));
 }
 
-const TableHeader = () => {
+const TableHeader = (props) => {
+    var s;
+    if(props.sorting){
+        s= <th class="aaa" onClick={() => props.handleSort(props)}>Icon  <FaCaretDown/> </th>
+    }else{
+        s =<th class="aaa" onClick={() => props.handleSort(props)}>Icon  <FaCaretUp/> </th>
+    }
     return (
         <thead>
-                            <tr>    
-                                <th>Icon</th>
-                                <th>Game Title</th>
-                                <th>Current Price</th>
-                                <th>Alert Price</th>
-                                <th>Notification</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
+            <tr>
+               { props.sortIcon == false ? <th class="aaa" onClick={() => props.handleSort(props)}>Icon  <FaGripLines/> </th>               
+               :
+               (s)
+               }
+                <th>Game Title</th>
+                <th>Current Price</th>
+                <th>Alert Price</th>
+                <th>Notification</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
     )
 }
 
 const TableBody = (props) => {
     //console.log(props);
     const [rrow, setRows] = useState(props.wishlist);
-    const removeRow = (obj) =>{
+    const removeRow = (obj) => {
         let temp = rrow;
         //temp.pop();
 
@@ -285,26 +316,26 @@ const TableBody = (props) => {
         // manually remove the game 
         //! ^^ find better way to fix
         temp.splice(idx, 1);
-        setRows(rrow=>temp);
+        setRows(rrow => temp);
         console.log(rrow);
         props.forceUpdate();
     }
-        const removeGame = (props, userId) => {
-                            fetch(`http://localhost:8080/api/removeGame/${userId}`, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(props)
-                            })
-                                .then(async data => await data.json())
-                                .then(removeRow(props))
+    const removeGame = (props, userId) => {
+        fetch(`http://localhost:8080/api/removeGame/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(props)
+        })
+            .then(async data => await data.json())
+            .then(removeRow(props))
 
-                        }
+    }
 
-    const rows = rrow.map((item, index) => {        
+    const rows = rrow.map((item, index) => {
         return (
-            <TableRow handleSwitch={props.handleSwitch} removeGame={removeGame} item={item} index={index} prices={props.prices} userId={props.userId} email={props.email} switch={props.switch}/>
+            <TableRow handleSwitch={props.handleSwitch} removeGame={removeGame} item={item} index={index} prices={props.prices} userId={props.userId} email={props.email} switch={props.switch} />
         )
     })
     return (
@@ -317,7 +348,7 @@ const TableBody = (props) => {
 const TableRow = (props) => {
     console.log(props.item);
     console.log(props.item.priceToBeNotifed);
-    const[value, setValue] = React.useState(props.item.notifSwitch);
+    const [value, setValue] = React.useState(props.item.notifSwitch);
     const handleSwitch = (newValue, event) => {
         setValue(newValue);
         props.handleSwitch(!props.item.notifSwitch, props.item.gameID, props.userId, props.email);
@@ -325,17 +356,17 @@ const TableRow = (props) => {
 
     return (
         <tr>
-        <td><Link to={`/game-detail/${props.item.gameID}`}><img class="storeImg" src={props.item.thumb} alt="Responsive image" width={50} height={50} /></Link></td>
-        <td><Link to={`/game-detail/${props.item.gameID}`}>{props.item.name}</Link></td>
-        <td>${props.prices[props.index]}</td>
-        <td>{props.item.priceToBeNotified == null ? "None Set" : "$" + props.item.priceToBeNotified}</td>
-        
-        <td>
-            {<Switch onChange={handleSwitch} checked={value}/>}
-        </td>
+            <td><Link to={`/game-detail/${props.item.gameID}`}><img class="storeImg" src={props.item.thumb} alt="Responsive image" width={50} height={50} /></Link></td>
+            <td><Link to={`/game-detail/${props.item.gameID}`}>{props.item.name}</Link></td>
+            <td>${props.item.salePrice}</td>
+            <td>{props.item.priceToBeNotified == null ? "None Set" : "$" + props.item.priceToBeNotified}</td>
 
-        <td><button type="button" onClick={() => props.removeGame(props.item, props.userId)} class="btn btn-danger" href="#collapseExample">Remove from List</button></td>
-    </tr>
+            <td>
+                {<Switch onChange={handleSwitch} checked={value} />}
+            </td>
+
+            <td><button type="button" onClick={() => props.removeGame(props.item, props.userId)} class="btn btn-danger" href="#collapseExample">Remove from List</button></td>
+        </tr>
     )
 }
 //export default Wishlist;
