@@ -607,6 +607,131 @@ module.exports = function() {
                 .catch(error => console.log('error', error));
             })
         },
+
+        updateGameView: function (gameIdDb, body) {
+            console.log(body)
+            return new Promise(async (resolve, reject) => {
+                games.findOne(
+                    { gameId: gameIdDb }, (err, result1) => {
+                        games.findById(result1._id, (err, result) => {
+                            if (err) {
+                                console.log("error1");
+                                reject(err);
+                            }
+                            else if (!result) {
+                                console.log("No game has been found");
+                                reject("No game has been found");
+                            }
+                            else {
+                                //body["date"] = new Date().setTime(0,0,0); 
+                                console.log(result)
+                                console.log(new Date(body["date"]))
+                                //console.log(result.timedViews[(result.timedViews.length)-1].date)
+                                if (result.timedViews[0]) {
+                                    console.log((result.timedViews.length) - 1)
+                                    if (result.timedViews[(result.timedViews.length) - 1].date.getTime() == new Date(body["date"]).getTime()) {
+                                        console.log("Changing")
+                                        result.timedViews[(result.timedViews.length) - 1].views += 1;
+                                        console.log(result.timedViews[(result.timedViews.length) - 1].views)
+                                    } else {
+                                        console.log("not changing")
+                                        result.timedViews.push(body);
+                                    }
+                                } else {
+                                    result.timedViews.push(body);
+                                }
+                                const len = result.timedViews.length;
+
+                                games.findByIdAndUpdate(result1._id, result, { new: true }, (err, result) => {
+                                    if (err)
+                                        reject(err);
+                                    else
+                                        resolve(result.timedViews[len - 1]);
+                                })
+                            }
+                        })
+                    }).then(
+
+                    )
+
+
+            })
+        },
+
+        gameMostViewed: function () {
+            return new Promise((resolve, reject) => {
+                games.find({}).sort({ views: -1 }).limit(20).then((results) => resolve(results))
+                    .catch((error) => reject(error))
+            })
+        },
+
+        gameMostRecentViewed: function () {
+            return new Promise((resolve, reject) => {
+
+
+                var d = new Date();
+                d.setMonth(d.getMonth() - 1);
+                d.setHours(0, 0, 0, 0)
+                // const date1 = new Date('2/13/2021');
+                const today = new Date();
+                console.log(d)
+                //aggregate unwinding timedViews,
+                //getting only dates from date d to today of main object,
+                // group the dates relating to id of game.
+                games.aggregate([{
+                    $unwind: "$timedViews"
+                },
+                {
+                    $match: {
+                        "timedViews.date": {
+                            $gte: d,
+                            $lte: new Date()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        "_id": "$_id",
+                        "gameName": {
+                            "$first": "$gameName"
+                        },
+                        "gameId": {
+                            "$first": "$gameId"
+                        },
+                        timedView: {
+                            "$push": "$timedViews"
+                        }
+                    }
+                }]).then(results => {
+                    //console.log(results)
+                    var array = [];
+                    for (i = 0; i < results.length; ++i) {
+                        let total = 0;
+                        for (l = 0; l < results[i].timedView.length; ++l) {
+                            //calculate how many day has been for that amount of view
+                            let diffTime = Math.abs(today - results[i].timedView[l].date);
+                            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            console.log(diffDays + results[i].timedView[l].date)
+                            //algorithm to give score relating to view
+                            // bigget total would have a bigger weight.
+                            total += parseFloat(results[i].timedView[l].views * 100) - parseFloat(results[i].timedView[l].views * diffDays * 3);
+                            //console.log(total)
+                        }
+                        console.log(total)
+                        var obj = { views: total, gameId: results[i].gameId, gameName: results[i].gameName }
+                        array.push(obj);
+                    }
+
+                    return array
+                }).then((results) => {
+                    var x = results.sort((a, b) => Number(b.views) - Number(a.views))
+                    x.splice(10)
+                    console.log(x)
+                    resolve(x)
+                })
+                    .catch((error) => reject(error))
+            })
+        },
         
         //Updates theme on mongo to dark/light
         updateTheme: function(userId, body) {
@@ -623,5 +748,7 @@ module.exports = function() {
 
     
     }
+
+    
 
 }   

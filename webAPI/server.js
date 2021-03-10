@@ -347,6 +347,27 @@ app.put('/api/db/update', (req, res) =>{
   })  //end of m.gameGetById	
 })	
 
+//Recent viewed with weight
+app.get('/api/db/viewedRecentGames', (req, res) =>{
+  m.gameMostRecentViewed().then(results => res.status(200).json(results))
+  .catch((error) => res.status(500).json(error));
+})
+//Recent viewed in total
+app.get('/api/db/viewedGames', (req, res) =>{
+  m.gameMostViewed().then(results => res.status(200).json(results))
+  .catch((error) => res.status(500).json(error));
+})
+//update viewed games.
+app.put('/api/db/updateGameView/:id', (req, res) => {
+  m.updateGameView(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
 //Get all games from our database	
 app.get('/api/db/games', (req, res) =>{	
   m.gameGetAll().then(results => res.status(200).json(results))	
