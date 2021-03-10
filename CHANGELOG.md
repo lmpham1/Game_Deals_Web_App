@@ -1,3 +1,10 @@
+## (March 9th, 2021)
+### Added a sorting functionality to the wishlisted games.
+* Implemented changing of backend user information schema.
+* Implemented backend reques handling and code.
+* Add a clickable section over the sorting area in the frontend.
+* Displaying icon to show the direction (asc, desc) of sorting.
+
 ## (March 7th, 2021)
 ### Added like/dislike functionality to Game Details Component
 * Implemented backend code to like/unlike comments
