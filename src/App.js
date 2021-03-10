@@ -10,11 +10,12 @@ import NavBar from './navBar';
 import Whishlist from './wishlist';
 import Register from './Register';
 import History from './history';
-import Home from './Home';
+import Search from './Search';
 import Axios from 'axios';
 import {toast} from 'react-toastify';
 import About from './About'
 import { light } from '@material-ui/core/styles/createPalette';
+import Home from './Home'
 
 
 //Routing setup
@@ -169,6 +170,7 @@ class App extends Component {
           <hr />
           <Switch>
             <Route exact path='/' render={() => (<Home/>)} />
+            <Route exact path='/search' render={() => (<Search/>)} />
             <Route exact path='/about' render={() => (<About />)} />
             <Route exact path='/history' render={() => (<History />)} />
             <Route exact path='/register' render={() => (<Register redirect={this.state.redirect}/>)} />

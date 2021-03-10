@@ -619,7 +619,9 @@ module.exports = function() {
                         resolve(result);
                 })
             }
-        )}
+        )},
+
+    
     }
 
 }   
