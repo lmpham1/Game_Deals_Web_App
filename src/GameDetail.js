@@ -280,7 +280,7 @@ class GameDetail extends React.Component {
             <hr class="line"></hr>
             <hr class="line"></hr>
             <DisplayGameInfoTable items={this.state.items} stores={this.state.stores} />
-            <h3><strong>Comments {this.state.comments.comments.length > 0 && (len)}</strong></h3>
+            <h3><strong>Comments {this.state.comments.comments.length > 0 && (len)}<span class = "float-right"><SortComments forceUpdate = {forceUpdate} comments = {this.state.comments.comments} /></span></strong></h3>
             <form onSubmit = {this.handleSubmit}>
               <div class="form-group">
                 <textarea 
@@ -301,7 +301,6 @@ class GameDetail extends React.Component {
           </div>
         );
       }
-      //<SortComments forceUpdate = {forceUpdate} comments = {this.state.comments.comments} />
       //<button onClick = {"this.setState({commentInput: ''});"} class="btn btn-secondary btn-lg">Cancel</button>
       else {
         console.log(items);
@@ -325,8 +324,9 @@ class GameDetail extends React.Component {
 }
 
 const SortComments = (props) => {
-  const sortComment = (forceUpdate, comments) => {
-    function compare(a,b) {
+
+  const sortComment = (forceUpdate, comments, type) => {
+    function newest(a,b) {
       if (a.date > b.date) {
         return -1;
       }
@@ -335,22 +335,41 @@ const SortComments = (props) => {
       }
       return 0;
     }
+    function oldest(a,b) {
+      if (a.date < b.date) {
+        return -1;
+      }
+      if (a.date > b.date) {
+        return 1;
+      }
+      return 0;
+    }
+    function topLikes(a,b) {
+      if (a.upVote > b.upVote) {
+        return -1;
+      }
+      if (a.upVote < b.upVote) {
+        return 1;
+      }
+      return 0;
+    }
 
-    comments.sort(compare);
+    if (type == "topLikes") comments.sort(topLikes);
+    else if (type == "newest") comments.sort(newest);
+    else if (type == "oldest") comments.sort(oldest);
     forceUpdate();
   }
- // <button onClick={() => sortComment(props.forceUpdate, props.comments)} type="button" class="btn btn-primary">Primary</button>
   return (
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Settings
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Sort by
     </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-        <a class="dropdown-item" href="#">Something else here</a>
-        </div>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item" onClick={() => sortComment(props.forceUpdate, props.comments, "topLikes")}>Most Likes</a>
+      <a class="dropdown-item" onClick={() => sortComment(props.forceUpdate, props.comments, "newest")}>Newest</a>
+      <a class="dropdown-item" onClick={() => sortComment(props.forceUpdate, props.comments, "oldest")}>Oldest</a>
     </div>
+  </div>
   )
 }
 const DisplayComments = (props) => {
