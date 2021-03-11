@@ -95,6 +95,11 @@ export const GlobalStyles = createGlobalStyle`
   .container{
     background-color: ${({ theme }) => theme.body};
   }
+
+  #featureBadge{
+    color: ${({ theme }) => theme.text};
+    background-color: ${({ theme }) => theme.body}
+  }
   `;
 
   export default GlobalStyles;
