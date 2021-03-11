@@ -239,7 +239,7 @@ class GameDetail extends React.Component {
     else {
       document.title = items.info.title;
       //          <span class="badge badge-danger">X</span>
-      console.log(this.state.comments);
+      //console.log(this.state.comments);
       if (this.state.userId != null) {
         this.state.gameInformation["date"] = new Date();
         this.state.gameInformation["thumb"] = this.state.thumbnail;

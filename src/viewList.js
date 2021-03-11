@@ -23,7 +23,7 @@ class ViewList extends React.Component {
             dealsOn: false
         }
 
-        console.log("in componentdidmount");
+        //console.log("in componentdidmount");
         let gameTemp = []
         let tempo = []
         Axios({
@@ -38,10 +38,10 @@ class ViewList extends React.Component {
 
             }
             else {
-                console.log("no ID");
+                //console.log("no ID");
                 this.setState({ noViews: false });
             }
-            console.log(res.data);
+            //onsole.log(res.data);
         }).then(() => {
             if (this.state.isLoaded) {
                 for (let i = 0; i < tempo.length; ++i) {
@@ -54,8 +54,8 @@ class ViewList extends React.Component {
                             else
                                 throw Error("HTTP 404, Not Found");
                         }).then((json) => {
-                            console.log(json.deals[0].price)
-                            console.log("JJOOOOOOOOOOOOOOOOOOOOOO")
+                            //console.log(json.deals[0].price)
+                            //console.log("JJOOOOOOOOOOOOOOOOOOOOOO")
                             tempo[i]["deals"] = json.deals[0].price;
                             tempo[i]["thumb"] = json.info.thumb;
                         }).then((re)=>{
@@ -84,10 +84,10 @@ class ViewList extends React.Component {
 
             }
             else {
-                console.log("no ID");
+                //console.log("no ID");
                 this.setState({ noViews: false });
             }
-            console.log(res.data);
+            //console.log(res.data);
         }).then(() => {
             if (this.state.isLoaded) {
                 for (let i = 0; i < tempo.length; ++i) {
@@ -100,8 +100,8 @@ class ViewList extends React.Component {
                             else
                                 throw Error("HTTP 404, Not Found");
                         }).then((json) => {
-                            console.log(json.deals[0].price)
-                            console.log("JJOOOOOOOOOOOOOOOOOOOOOO")
+                            //console.log(json.deals[0].price)
+                            //console.log("JJOOOOOOOOOOOOOOOOOOOOOO")
                             tempo[i]["deals"] = json.deals[0].price;
                             tempo[i]["thumb"] = json.info.thumb;
                         }).then((re)=>{
@@ -122,7 +122,7 @@ class ViewList extends React.Component {
             this.forceUpdate();
         }
         var { isLoaded, items } = this.state;
-        console.log(this.state)
+        //console.log(this.state)
         var { dealsOn, items } = this.state;
         if (!isLoaded && !dealsOn) {
             return (
@@ -204,10 +204,10 @@ const TableHeader = () => {
 // Will take one less.
 const TableBody = (props) => {
     const [rrow, setRows] = useState(props.gamesList);
-    console.log(props.gamesList.deals)
+    //console.log(props.gamesList.deals)
     const rows = rrow.map((item, index) => {
-        console.log("ssssssssssssssss11111111")
-        console.log(item.deals)
+        //console.log("ssssssssssssssss11111111")
+        //console.log(item.deals)
         if (item.gameId && item.deals) {
             return (
                 <TableRow item={item} index={index} />
@@ -223,8 +223,8 @@ const TableBody = (props) => {
 }
 
 const TableRow = (props) => {
-    console.log(props.item.deals)
-    console.log(props)
+    //console.log(props.item.deals)
+    //console.log(props)
     return (
         <tr>
             <td><Link to={`/game-detail/${props.item.gameId}`}><img class="storeImg" src={props.item.thumb} alt="image" width={50} height={50} /></Link></td>

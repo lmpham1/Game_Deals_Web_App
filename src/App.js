@@ -17,7 +17,6 @@ import Axios from 'axios';
 import {toast} from 'react-toastify';
 import About from './About'
 import { light } from '@material-ui/core/styles/createPalette';
-import Home from './Home'
 
 
 //Routing setup
