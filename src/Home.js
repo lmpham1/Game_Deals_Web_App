@@ -148,7 +148,15 @@ class Home extends Component {
         
         return (
             <div>
-                <h2 className="text-center badge-light mb-0 p-2" style={{fontFamily: 'Russo One', sanSerifs: true}}><img width="20" src="https://www.flaticon.com/svg/vstatic/svg/599/599502.svg?token=exp=1615440501~hmac=f87a3e473c115cff970de6d7b07e1f97"/> Featured Titles <img width="20" src="https://www.flaticon.com/svg/vstatic/svg/599/599502.svg?token=exp=1615440501~hmac=f87a3e473c115cff970de6d7b07e1f97"/></h2>
+                {
+                this.state.redirect ? 
+                <div className="account-created-text">
+                    <p>Account was successfully created. Please log in now.</p>
+                </div>
+                :
+                <p></p>
+                }
+                <h2 className="text-center badge-light mb-0 p-2" id="featureBadge" style={{fontFamily: 'Russo One', sanSerifs: true}}>&#x1F525; Featured Titles &#x1F525;</h2>
                 {this.state.trendingGames && 
                 <Carousel  className="img-wrapper">
                     {
@@ -170,9 +178,9 @@ class Home extends Component {
                                             style={{height: 500}}
                                         />
                                         <Carousel.Caption>
-                                            <h2 style={{fontFamily: 'Russo One', sanSerifs: true, fontSize: 40, backgroundColor: 'rgba(34, 204, 242, 0.7)', display: 'inline', paddingLeft: 20, paddingRight: 20}}>{game.info.title}</h2>
+                                            <h2 style={{fontFamily: 'Russo One', sanSerifs: true, fontSize: 40, backgroundColor: 'rgba(34, 204, 255, 0.7)', display: 'inline', paddingLeft: 20, paddingRight: 20}}>{game.info.title}</h2>
                                             <br/>
-                                            <p className="badge badge-danger" style={{fontFamily: 'Roboto', sansSerif: true, marginTop: 10, fontSize: 30}}>{game.deals[0].price}$ ({Math.floor(game.deals[0].savings)}% Off!)</p>
+                                            <p className="badge badge-danger" style={{fontFamily: 'Bebas Neue', sansSerif: true, marginTop: 2, fontSize: 30}}>{game.deals[0].price}$ {game.deals[0].savings > 0.5 ? "(" + Math.floor(game.deals[0].savings) + "% Off!)" : ""}</p>
                                         </Carousel.Caption>
                                     </Link>
                                 </Carousel.Item>
@@ -212,15 +220,6 @@ class Home extends Component {
                         </div>
                     )
                 })}
-
-            <>{
-                this.state.redirect ? 
-                <div className="account-created-text">
-                    <p>Account was successfully created. Please log in now.</p>
-                </div>
-                :
-                <p></p>
-            }</>
             
             </div>
         )
