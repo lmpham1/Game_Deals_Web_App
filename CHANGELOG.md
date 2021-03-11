@@ -1,4 +1,10 @@
 ## (March 11th, 2021)
+### Added share buttons to search table
+* Added Twitter share button to post game deal page
+* Added Facebook share button to post game deal page
+* Added copy link to clipboard for the game deal page
+
+## (March 11th, 2021)
 ### Added features for home page
 * Added a slide show for trending games
 * Added carousel sliders for games from all stores in CheapShark API
