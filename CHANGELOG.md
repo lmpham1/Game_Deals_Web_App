@@ -1,3 +1,9 @@
+## (March 11th, 2021)
+### Added features for home page
+* Added a slide show for trending games
+* Added carousel sliders for games from all stores in CheapShark API
+* Made each carousel item clickable so that the user can view details/add to wishlist/go to the store page
+
 ## (March 9th, 2021)
 ### Added a sorting functionality to the wishlisted games.
 * Implemented changing of backend user information schema.
