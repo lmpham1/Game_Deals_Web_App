@@ -9,9 +9,13 @@ export const GlobalStyles = createGlobalStyle`
   }
   
   body {
-    background: ${({ theme }) => theme.body};
+    background-image: url(${({theme}) => theme.bg});
     color: ${({ theme }) => theme.text};
     transition: all 0.25s linear;
+    background-attachment: fixed;
+    background-size: cover,
+    background-repeat: no-repeat,
+    background-position: center center;
   }
 
   .navbar {
@@ -86,6 +90,10 @@ export const GlobalStyles = createGlobalStyle`
     text-decoration: none;
     display: inline-block;
     padding: 4px;
+  }
+
+  .container{
+    background-color: ${({ theme }) => theme.body};
   }
   `;
 

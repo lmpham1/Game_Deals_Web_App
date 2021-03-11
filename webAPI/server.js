@@ -380,7 +380,6 @@ app.get('/api/db/game/:id', (req, res) =>{
   .catch((error) => res.status(500).json(error));	
 })
 
-
 app.use((req, res) => {
     res.status(404).send("Resource not found");
 });

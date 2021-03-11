@@ -213,7 +213,7 @@ class GameSearch extends React.Component{
             this.setState({userId: res});
             console.log(res);
         })
-        .catch(err => console.log(err));;
+        .catch(err => console.log(err));
     }
 
     handlePageClick(currentPage, currentNo){

@@ -93,7 +93,7 @@ class NavBar extends React.Component {
         };
         
         return (
-            <nav class="navbar navbar-expand-lg">
+            <nav class="navbar navbar-expand-lg sticky-top">
                 <a class="navbar-brand" href="/">Game Deals</a>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -103,6 +103,9 @@ class NavBar extends React.Component {
                         </li>
                         <li class="nav-item">
                             <Link to='about'>About</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to='search'>Search</Link>
                         </li>
                         <li class="nav-item">
                             <Link to='register'>Register</Link>
