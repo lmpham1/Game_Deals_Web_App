@@ -5,7 +5,7 @@ const useSizeElement = () => {
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    if(elementRef.current != null)
+    //if(elementRef.current != null)
       setWidth(elementRef.current.clientWidth);
   }, [elementRef.current]);
 

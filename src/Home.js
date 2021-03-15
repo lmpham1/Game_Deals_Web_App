@@ -127,7 +127,7 @@ class Home extends Component {
                         if(responseData && responseData.length > 0){
                             this.setState(state => {
                                 const deals2D = state.storeGamesAll;
-                                deals2D.push(responseData.filter((deal, idx) => {return deal.savings > 10;}));
+                                deals2D.push(responseData.filter((deal, idx) => {return deal.savings >= 0;}));
                                 return({storeGamesAll: deals2D});
                             })
                         }
@@ -201,19 +201,20 @@ class Home extends Component {
                     //console.log(eachStoreGames);
                     //console.log(this.state.storeArr);
                     let theStore = {};
-                    if (this.state.storeArr.length > 0) console.log(this.state.eachStoreGames);
+                    //console.log(this.state.eachStoreGames);
+                    //console.log(this.state.storeArr);
                     this.state.storeArr.map((store, idx) => {
-                        if (store && eachStoreGames.length > 0){
+                        if (store){
                             if(store.storeID === eachStoreGames[0].storeID){
                                 theStore = store;
                             }
                         }
                     })
-                    if (theStore.storeName){
-                        console.log(theStore);
+                    
+                        //console.log(theStore);
                         return(
                             <div>
-                                <h3 style={{fontFamily: 'Russo One', sanSerifs: true}}>{theStore.storeName} {theStore.storeID} 's Hot Deals:</h3>
+                                <h3 style={{fontFamily: 'Russo One', sanSerifs: true}}>{theStore.storeName}'s Hot Deals:</h3>
                                 {<Slider user={this.state.user} loggedIn={this.state.loggedIn}>
                                 {eachStoreGames.map(game => {
                                     if(game)
@@ -223,7 +224,6 @@ class Home extends Component {
                                 }
                             </div>
                         )
-                    }
                 })}
             
             </div>
