@@ -4,7 +4,8 @@ import Axios from 'axios';
 import { withAlert } from 'react-alert';
 import Switch from "react-switch";
 import { FaGithub, FaCaretUp, FaGripLines, FaCaretDown } from "react-icons/fa";
-import Toggle from 'react-toggle';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';import './App.css';
 import './App.css';
 
 class Wishlist extends React.Component {
@@ -26,18 +27,15 @@ class Wishlist extends React.Component {
             sorting: false,
             sortIcon: false
         }
-        this.handleChange = this.handleChange.bind(this);
         this.handleSwitch = this.handleSwitch.bind(this);
         this.handleSort = this.handleSort.bind(this);
     }
 
-    handleChange(e) {
-        this.setState({ alertPrice: e });
-    }
 
     handleSwitch(checked, gameID, userID, email) {
         console.log(checked);
-        //Updates database
+        this.setState({switch: checked});
+        //Updates database 
         fetch(`http://localhost:8080/api/updateNotif/${userID}/${checked}`, {
             method: 'PUT',
             headers: {
@@ -46,18 +44,27 @@ class Wishlist extends React.Component {
             body: JSON.stringify({ gameID: gameID })
         }).then(res => console.log(res))
             .catch(error => { console.log(error) });
+            
+            if (checked == true) {
+                var inputPrice = prompt("Enter alert price");
 
+                //Create alert
+                 CreateAlert(gameID, userID, email, inputPrice);
+                this.setState({alertPrice: inputPrice});
 
-        this.setState({ switch: checked });
-
-        if (checked == true) {
-            var inputPrice = prompt("Enter alert price");
-            CreateAlert(gameID, userID, email, inputPrice);
-        }
-        else {
-            DeleteAlert(gameID, userID, email);
-            console.log("Switched off!");
-        }
+                //Notifcation
+                toast.success(
+                    <div className="media">
+                        <p className="media-body">Notification created</p>
+                    </div>);
+            }
+            else {
+                DeleteAlert(gameID, userID, email);
+                toast.error(
+                    <div className="media">
+                        <p className="media-body">Notification deleted</p>
+                    </div>);
+            }
     }
 
     handleSort(e) {
