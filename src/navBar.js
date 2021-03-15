@@ -38,8 +38,6 @@ class NavBar extends React.Component {
                 this.setState({ loggedIn: false });
                 this.setState(this.state);
             }
-            console.log(res);
-            console.log("loggedIn STATE>>>>>    " + this.state.loggedIn);
             //On break do this only once and store the value.
         });
     }
@@ -56,16 +54,12 @@ class NavBar extends React.Component {
                 withCredentials: true,
                 url: "http://localhost:8080/api/login",
             }).then((res) => {
-                console.log(res.data)
                 if (res.data.userName) {
-                    console.log(this.props.state)
 
                     this.setState({ data: res.data });
-                    //this.setState(this.state);
                     this.setState({ loggedIn: true });
                     window.location.reload(false);
                     this.props.handleLogin();
-                    //this.props.history.push("/");
                 }
                 else {
                     window.$('#collapseExample').collapse("show")

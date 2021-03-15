@@ -201,24 +201,29 @@ class Home extends Component {
                     //console.log(eachStoreGames);
                     //console.log(this.state.storeArr);
                     let theStore = {};
+                    if (this.state.storeArr.length > 0) console.log(this.state.eachStoreGames);
                     this.state.storeArr.map((store, idx) => {
-                        if (store){
+                        if (store && eachStoreGames.length > 0){
                             if(store.storeID === eachStoreGames[0].storeID){
                                 theStore = store;
                             }
                         }
                     })
-                    return(
-                        <div>
-                            <h3 style={{fontFamily: 'Russo One', sanSerifs: true}}>{theStore.storeName}'s Hot Deals:</h3>
-                            {<Slider user={this.state.user} loggedIn={this.state.loggedIn}>
-                            {eachStoreGames.map(game => (
-                                <Slider.Item game={game} key={game.gameID}>{game.title}</Slider.Item>
-                            ))}
-                            </Slider>
-                            }
-                        </div>
-                    )
+                    if (theStore.storeName){
+                        console.log(theStore);
+                        return(
+                            <div>
+                                <h3 style={{fontFamily: 'Russo One', sanSerifs: true}}>{theStore.storeName} {theStore.storeID} 's Hot Deals:</h3>
+                                {<Slider user={this.state.user} loggedIn={this.state.loggedIn}>
+                                {eachStoreGames.map(game => {
+                                    if(game)
+                                    return <Slider.Item game={game} key={game.gameID}>{game.title}</Slider.Item>
+                                })}
+                                </Slider>
+                                }
+                            </div>
+                        )
+                    }
                 })}
             
             </div>

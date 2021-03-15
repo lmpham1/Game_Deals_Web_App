@@ -104,7 +104,6 @@ app.get('/api/user/username/:name', (req, res)=>{
 
 //Update user
 app.put('/api/user/:id', (req, res) => {
-  console.log(req.body);
   m.userUpdate(req.params.id, req.body)
   .then(data=> res.status(201).json(data))
   .catch(err=> res.status(500).json({message: err}));
@@ -118,8 +117,6 @@ app.delete('/api/user/:id', (req, res) =>{
 })
 
 app.put('/api/addGame/:id', (req, res) => {
-  console.log("here!")
-  console.log(req.body);
   m.addGame(req.params.id, req.body)
   .then((data) => {
     res.status(201).json(data);
@@ -152,7 +149,6 @@ app.put('/api/history/pop/:id', (req, res) => {
 
 //Saves theme
 app.put('/api/updateTheme/:id', (req, res) => {
-  console.log("This is passed: " + req.body.theme);
   m.updateTheme(req.params.id, req.body.theme)
   .then((data) => {
     res.status(201).json(data);
@@ -226,7 +222,6 @@ app.put('/api/updateNotif/:id/:state', (req, res) => {
 
 //Create user
 app.post('/api/users', (req,res) => {
-  console.log(req.body);
   m.userAdd(req.body)
   .then((data) => {
     res.status(201).json(data);
@@ -243,7 +238,6 @@ app.post('/api/login', (req, res, next) =>{
 if(err){ return res.json(err);}
 if (!user) { return res.json("Wrong Credentials")}
 req.logIn(user, function(err){
-  console.log(err + "TIL HEEEEREEEE");
   if (err) { res.json("No matching!") ;}
   return res.send(user);
 });
@@ -251,9 +245,7 @@ req.logIn(user, function(err){
 })
 
 app.get('/api/logout', (req, res)=>{
-  console.log("here");
   req.logOut();
-  console.log(res.user);
   res.send(res.user);
 });
 
@@ -266,12 +258,6 @@ app.get('/api/game/:gameid', (req, res)=>{
   m.findGameById(req.params.gameid)
   .then(data => res.json(data))
   .catch(error => console.log('error', error));
-  /*
-  var gameUrl = "https://www.cheapshark.com/api/1.0/games?id=" + req.params.gameid;
-  fetch(gameUrl)
-  .then(res => res.json())
-  .then(data => res.json(data))
-  .catch(error => console.log('error', error));*/
 });
 
 //Fetch game list based on search term
@@ -329,8 +315,7 @@ app.put('/api/db/update', (req, res) =>{
 
     //if the game exists, only update the game	
     m.gameUpdate(oldGame.gameId, game).then((updatedGame) => {	
-      res.json(updatedGame);	
-      //console.log("Game " + updatedGame.gameId + " updated!")	
+      res.json(updatedGame);
     }).catch((error) => console.log(error))     //end of m.gameUpdate()	
 
   }).catch((error) => {	
@@ -339,7 +324,6 @@ app.put('/api/db/update', (req, res) =>{
     if (error === -1){	
       m.gameAdd(game).then((addedGame) => {	
         res.json(addedGame);	
-        //console.log("Game " + addedGame.gameId + " added!")	
       }).catch((err) => console.log(err));    //end of m.gameAdd()	
     } 	
     else console.log(error);   //other errors	

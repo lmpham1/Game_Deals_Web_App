@@ -64,24 +64,16 @@ module.exports = function() {
         
         userAdd: function (newItem) {
             return new Promise(async (resolve, reject) => {
-                console.log(newItem.password)
                 if (newItem.password) {
                     test = newItem.password
                     salt = await bcrypt.genSalt();
                     newItem.password = await bcrypt.hash(newItem.password, salt);
-                    console.log(salt)
-                    console.log(newItem.password)
                 }
                 
-                if (bcrypt.compare(newItem.password, test))
-                console.log("encrypt worked")
-                else
-                console.log("encrypt did not work")
                 users.create(newItem, (error, item) => {
                     if (error) {
                         return reject(error.message);
                     }
-                    console.log(newItem.password)
                     return resolve(item)
                 })
             })
@@ -116,15 +108,12 @@ module.exports = function() {
         },	
 
         gameUpdate: function(gameId, updatedGame){	
-            //console.log(updatedGame);	
-            //console.log(gameId);	
             return new Promise((resolve, reject)=>{	
                 games.findOneAndUpdate(	
                     {gameId: gameId},    //filter query	
                     {  	
                         gameName: updatedGame.external  //properties to be updated, add more properties later here	
                     }, (err, result)=>{	
-                        //console.log(result);	
                         if (err)	
                             reject(err);	
                         else
@@ -135,39 +124,30 @@ module.exports = function() {
                
         initizalizePass: function (passport) {
             const authenticateUser = async (username, password, done) => {
-                console.log(username)
                 var user
                 try {
-                    console.log('inside try get user')
                     await users.findOne({ userName: username }, async (err, result) => {
                         if (err) {
-                            console.log('inside try get user if err' + err)
                             return done(null, false, { message: err });
-                            }
-                            else if (!result) {
-                                console.log('inside try get user user not found')
-                                return done(null, false, { message: "no user found!" });
-                            }
-                            else {
-                            console.log('inside try get user user found' + result)
+                        }
+                        else if (!result) {
+                            return done(null, false, { message: "no user found!" });
+                        }
+                        else {
                             user = result;
                             if (!user) {
-                                console.log('after finding user if !user')
                                 return done(null, false, { message: 'That username is not registered!' })
                             }
                             if (await bcrypt.compare(password, user.password)) {
-                                console.log('inside try bcrypt compare')
                                 return done(null, user);
                             }
                             else {
-                                console.log('inside try bcrypt compare else(wrong pass)')
                                 return done(null, { message: "Wrong password!" });
                             }
                             
                         }
                     })
                 } catch (error) {
-                    console.log('inside catch error' + error)
                     return done(null, false, { message: "no user found!" + error });
                     
                 }
@@ -175,13 +155,12 @@ module.exports = function() {
             passport.use(new localStrategy({ usernameField: 'userName' }, authenticateUser));
             
             passport.serializeUser((user, done) => {
-                console.log('inside serialization' + user)
                 done(null, user.id)
             });
+
             passport.deserializeUser((id, done) => {
-                console.log('inside deserialization')
                 users.findById(id, function (err, user) {
-                    console.log('inside deserialization' + err + user)
+                    //console.log('inside deserialization' + err + user)
                     done(err, user);
                 });
             });
