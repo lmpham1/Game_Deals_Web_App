@@ -724,6 +724,213 @@ module.exports = function() {
                 })
             }
         )},
+        
+        likeComment: function(commentId, gameId, userId) {
+            let found = false;
+            let idx = null;
+            return new Promise((resolve, reject) => {
+                games.findById(gameId, (err, result) => {
+                    if (err) {
+                        console.log("error");
+                        reject(err);
+                    }
+                    else if (!result) {
+                        console.log("No game has been found");
+                        reject("No game has been found");
+                    }
+                    else {
+                        for (let i = 0; i < result.comments.length; i++) {
+                            if (commentId == result.comments[i]._id) {
+                                idx = i;
+                                found = true;
+                                break;
+                            }
+                        }
+                        let userFound = false;
+                        for (let i = 0; i < result.comments[idx].userLikes.length; i++) {
+                            if (userId == result.comments[idx].userLikes[i]) {
+                                userFound = true;
+                                break;
+                            }
+                        }
+
+                        if (userFound) {
+                            reject("User already liked it");
+                        }
+                        else {
+                            ++result.comments[idx].upVote;
+                            result.comments[idx].userLikes.push(userId);
+                        }
+                    }
+                    if (found) {
+                        games.findByIdAndUpdate(gameId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result.comments[idx]);
+                        })
+                    }
+                    else {
+                        reject("Cant' like the comment");
+                    }
+
+                })
+            })
+        },
+
+        unlikeComment: function(commentId, gameId, userId) {
+            let found = false;
+            let idx = null;
+            return new Promise((resolve, reject) => {
+                games.findById(gameId, (err, result) => {
+                    if (err) {
+                        console.log("error");
+                        reject(err);
+                    }
+                    else if (!result) {
+                        console.log("No game has been found");
+                        reject("No game has been found");
+                    }
+                    else {
+                        for (let i = 0; i < result.comments.length; i++) {
+                            if (commentId == result.comments[i]._id) {
+                                idx = i;
+                                found = true;
+                                break;
+                            }
+                        }
+                        for (let i = 0; i < result.comments[idx].userLikes.length; i++) {
+                            if (userId == result.comments[idx].userLikes[i]) {
+                                result.comments[idx].userLikes.splice(i, 1);
+                                break;
+                            }
+                        }
+                        
+                        if (result.comments[idx].upVote <= 0) {
+                            result.comments[idx].upVote = 0;
+                        }
+                        else {
+                            --result.comments[idx].upVote;
+                        }
+                    }
+                    if (found) {
+                        games.findByIdAndUpdate(gameId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result.comments[idx]);
+                        })
+                    }
+                    else {
+                        reject("Cant' like the comment");
+                    }
+
+                })
+            })
+        },
+        
+        dislikeComment: function(commentId, gameId, userId) {
+            let found = false;
+            let idx = null;
+            return new Promise((resolve, reject) => {
+                games.findById(gameId, (err, result) => {
+                    if (err) {
+                        console.log("error");
+                        reject(err);
+                    }
+                    else if (!result) {
+                        console.log("No game has been found");
+                        reject("No game has been found");
+                    }
+                    else {
+                        for (let i = 0; i < result.comments.length; i++) {
+                            if (commentId == result.comments[i]._id) {
+                                idx = i;
+                                found = true;
+                                break;
+                            }
+                        }
+                        let userFound = false;
+                        for (let i = 0; i < result.comments[idx].userDislikes.length; i++) {
+                            if (userId == result.comments[idx].userDislikes[i]) {
+                                userFound = true;
+                                break;
+                            }
+                        }
+
+                        if (userFound) {
+                            reject("User already liked it");
+                        }
+                        else {
+                            ++result.comments[idx].downVote;
+                            result.comments[idx].userDislikes.push(userId);
+                        }
+                    }
+                    if (found) {
+                        games.findByIdAndUpdate(gameId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result.comments[idx]);
+                        })
+                    }
+                    else {
+                        reject("Cant' like the comment");
+                    }
+
+                })
+            })
+        },
+        unDislikeComment: function(commentId, gameId, userId) {
+            let found = false;
+            let idx = null;
+            return new Promise((resolve, reject) => {
+                games.findById(gameId, (err, result) => {
+                    if (err) {
+                        console.log("error");
+                        reject(err);
+                    }
+                    else if (!result) {
+                        console.log("No game has been found");
+                        reject("No game has been found");
+                    }
+                    else {
+                        for (let i = 0; i < result.comments.length; i++) {
+                            if (commentId == result.comments[i]._id) {
+                                idx = i;
+                                found = true;
+                                break;
+                            }
+                        }
+                        for (let i = 0; i < result.comments[idx].userDislikes.length; i++) {
+                            if (userId == result.comments[idx].userDislikes[i]) {
+                                result.comments[idx].userDislikes.splice(i, 1);
+                                break;
+                            }
+                        }
+                        
+                        if (result.comments[idx].downVote <= 0) {
+                            result.comments[idx].downVote = 0;
+                        }
+                        else {
+                            --result.comments[idx].downVote;
+                        }
+                    }
+                    if (found) {
+                        games.findByIdAndUpdate(gameId, result, { new: true }, (err, result) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result.comments[idx]);
+                        })
+                    }
+                    else {
+                        reject("Cant' like the comment");
+                    }
+
+                })
+            })
+        }
 
     
     }
