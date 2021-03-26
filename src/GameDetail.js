@@ -274,13 +274,14 @@ class GameDetail extends React.Component {
         if (this.state.userId != null) {
           console.log(this.state.userId);
           let len = `(${this.state.comments.comments.length})`;
+          //<span class = "float-right"><SortComments forceUpdate = {forceUpdate} comments = {this.state.comments.comments} /></span>
           return (
             <div>
             <DisplayInfo userId={this.state.userId} gameInfo={this.state.gameInformation} cheapestDealEmpty={this.state.cheapestDealEmpty} items={this.state.items} thumbnail={this.state.thumbnail} />
             <hr class="line"></hr>
             <hr class="line"></hr>
             <DisplayGameInfoTable items={this.state.items} stores={this.state.stores} />
-            <h3><strong>Comments {this.state.comments.comments.length > 0 && (len)}<span class = "float-right"><SortComments forceUpdate = {forceUpdate} comments = {this.state.comments.comments} /></span></strong></h3>
+            <h3><strong>Comments {this.state.comments.comments.length > 0 && (len)}</strong></h3>
             <form onSubmit = {this.handleSubmit}>
               <div class="form-group">
                 <textarea 
