@@ -104,7 +104,6 @@ app.get('/api/user/username/:name', (req, res)=>{
 
 //Update user
 app.put('/api/user/:id', (req, res) => {
-  console.log(req.body);
   m.userUpdate(req.params.id, req.body)
   .then(data=> res.status(201).json(data))
   .catch(err=> res.status(500).json({message: err}));
@@ -118,8 +117,6 @@ app.delete('/api/user/:id', (req, res) =>{
 })
 
 app.put('/api/addGame/:id', (req, res) => {
-  console.log("here!")
-  console.log(req.body);
   m.addGame(req.params.id, req.body)
   .then((data) => {
     res.status(201).json(data);
@@ -152,7 +149,6 @@ app.put('/api/history/pop/:id', (req, res) => {
 
 //Saves theme
 app.put('/api/updateTheme/:id', (req, res) => {
-  console.log("This is passed: " + req.body.theme);
   m.updateTheme(req.params.id, req.body.theme)
   .then((data) => {
     res.status(201).json(data);
@@ -266,7 +262,6 @@ app.put('/api/updateNotif/:id/:state', (req, res) => {
 
 //Create user
 app.post('/api/users', (req,res) => {
-  console.log(req.body);
   m.userAdd(req.body)
   .then((data) => {
     res.status(201).json(data);
@@ -283,7 +278,6 @@ app.post('/api/login', (req, res, next) =>{
 if(err){ return res.json(err);}
 if (!user) { return res.json("Wrong Credentials")}
 req.logIn(user, function(err){
-  console.log(err + "TIL HEEEEREEEE");
   if (err) { res.json("No matching!") ;}
   return res.send(user);
 });
@@ -291,9 +285,7 @@ req.logIn(user, function(err){
 })
 
 app.get('/api/logout', (req, res)=>{
-  console.log("here");
   req.logOut();
-  console.log(res.user);
   res.send(res.user);
 });
 
@@ -306,12 +298,6 @@ app.get('/api/game/:gameid', (req, res)=>{
   m.findGameById(req.params.gameid)
   .then(data => res.json(data))
   .catch(error => console.log('error', error));
-  /*
-  var gameUrl = "https://www.cheapshark.com/api/1.0/games?id=" + req.params.gameid;
-  fetch(gameUrl)
-  .then(res => res.json())
-  .then(data => res.json(data))
-  .catch(error => console.log('error', error));*/
 });
 
 //Fetch game list based on search term
@@ -356,6 +342,67 @@ app.get('/user', (req, res)=>{
   res.send(req.user);
 })
 
+/*************************	
+ * Our API Game Requests *	
+ *************************/	
+
+//Add/Update game to the database	
+app.put('/api/db/update', (req, res) =>{	
+  let game = req.body;	
+
+  //look up the game in our database	
+  m.gameGetById(game.gameID).then((oldGame) => {	
+
+    //if the game exists, only update the game	
+    m.gameUpdate(oldGame.gameId, game).then((updatedGame) => {	
+      res.json(updatedGame);
+    }).catch((error) => console.log(error))     //end of m.gameUpdate()	
+
+  }).catch((error) => {	
+
+    //if the game does not exist (error == -1), add it to the database	
+    if (error === -1){	
+      m.gameAdd(game).then((addedGame) => {	
+        res.json(addedGame);	
+      }).catch((err) => console.log(err));    //end of m.gameAdd()	
+    } 	
+    else console.log(error);   //other errors	
+
+  })  //end of m.gameGetById	
+})	
+
+//Recent viewed with weight
+app.get('/api/db/viewedRecentGames', (req, res) =>{
+  m.gameMostRecentViewed().then(results => res.status(200).json(results))
+  .catch((error) => res.status(500).json(error));
+})
+//Recent viewed in total
+app.get('/api/db/viewedGames', (req, res) =>{
+  m.gameMostViewed().then(results => res.status(200).json(results))
+  .catch((error) => res.status(500).json(error));
+})
+//update viewed games.
+app.put('/api/db/updateGameView/:id', (req, res) => {
+  m.updateGameView(req.params.id, req.body)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+//Get all games from our database	
+app.get('/api/db/games', (req, res) =>{	
+  m.gameGetAll().then(results => res.status(200).json(results))	
+  .catch((error) => res.status(500).json(error));	
+})	
+
+//Get a game by its ID	
+app.get('/api/db/game/:id', (req, res) =>{	
+  m.gameGetById(req.params.id).then(result => res.status(200).json(result))	
+  .catch((error) => res.status(500).json(error));	
+})
 
 app.use((req, res) => {
     res.status(404).send("Resource not found");

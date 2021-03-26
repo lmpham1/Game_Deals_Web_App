@@ -10,8 +10,11 @@ import NavBar from './navBar';
 import Whishlist from './wishlist';
 import Register from './Register';
 import History from './history';
+import Search from './Search';
 import Home from './Home';
+import ViewList from './viewList';
 import Axios from 'axios';
+import {toast} from 'react-toastify';
 import About from './About'
 import { light } from '@material-ui/core/styles/createPalette';
 
@@ -128,11 +131,14 @@ class App extends Component {
 
   handleLogout() {
     this.setState({ loggedIn: false });
+    //window.location.reload(false);
   }
   handleLogin() {
     this.setState({ loggedIn: true });
-    console.log(this.state.loggedIn + "LOGGEDIN APP.JA")
+    console.log(this.state.loggedIn + "LOGGEDIN APP.JS");
     this.setState(this.state);
+    //window.location.reload(false);
+    //toast.success("Welcome back, " + this.state.user.fName + "!");
   }
   
   render() {
@@ -165,11 +171,13 @@ class App extends Component {
           <hr />
           <Switch>
             <Route exact path='/' render={() => (<Home/>)} />
+            <Route exact path='/search' render={() => (<Search/>)} />
             <Route exact path='/about' render={() => (<About />)} />
             <Route exact path='/history' render={() => (<History />)} />
             <Route exact path='/register' render={() => (<Register redirect={this.state.redirect}/>)} />
             <Route exact path='/loginOk' render={() => (<LoginOk />)} />
             <Route exact path='/wishlist' render={() => (<Whishlist loggedIn={this.state.loggedIn} />)} />
+            <Route exact path='/viewList' render={() => (<ViewList />)} />
             <Route exact path='/game-detail/:id' render={(props) => (<GameDetail id={props.match.params.id} />)} />
           </Switch>
         </div>

@@ -18,6 +18,7 @@ class NavBar extends React.Component {
             loginPassword: "",
             data: null,
             isOpen: false,
+            isLoading: false,
             theme: ""
         }
     }
@@ -37,14 +38,13 @@ class NavBar extends React.Component {
                 this.setState({ loggedIn: false });
                 this.setState(this.state);
             }
-            console.log(res);
-            console.log("loggedIn STATE>>>>>    " + this.state.loggedIn);
             //On break do this only once and store the value.
         });
     }
 
     render() {
         const login = () => {
+            this.setState({isLoading: true});
             Axios({
                 method: "POST",
                 data: {
@@ -54,16 +54,12 @@ class NavBar extends React.Component {
                 withCredentials: true,
                 url: "http://localhost:8080/api/login",
             }).then((res) => {
-                console.log(res.data)
                 if (res.data.userName) {
-                    console.log(this.props.state)
 
                     this.setState({ data: res.data });
-                    //this.setState(this.state);
                     this.setState({ loggedIn: true });
                     window.location.reload(false);
                     this.props.handleLogin();
-                    //this.props.history.push("/");
                 }
                 else {
                     window.$('#collapseExample').collapse("show")
@@ -72,6 +68,7 @@ class NavBar extends React.Component {
                     }, 4000);
 
                 }
+                this.setState({isLoading: false});
             });
         };
 
@@ -90,7 +87,7 @@ class NavBar extends React.Component {
         };
         
         return (
-            <nav class="navbar navbar-expand-lg">
+            <nav class="navbar navbar-expand-lg sticky-top">
                 <a class="navbar-brand" href="/">Game Deals</a>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -101,41 +98,56 @@ class NavBar extends React.Component {
                         <li class="nav-item">
                             <Link to='about'>About</Link>
                         </li>
+                        <li className="nav-item">
+                            <Link to='search'>Search</Link>
+                        </li>
                         <li class="nav-item">
                             <Link to='register'>Register</Link>
                         </li>
+                        <li class="nav-item">
+                            <Link to='/viewList'>Top Views</Link>
+                        </li>
                     </ul>
                 </div>
-                {this.state.loggedIn == true ?
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Settings
-                    </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <Link to="/wishlist"> <a class="dropdown-item" href="#">Wishlist</a></Link>
-                            <Link to="/history"> <a class="dropdown-item" href="#">History</a></Link>
-                            <Link to="/"><button class="dropdown-item logout" type="button" onClick={logOut} href="#">Logout</button></Link>
-                        </div>
-                    </div>
+                <div>
 
+                </div>
+                {this.state.isLoading ?
+                    <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                    </div>
                     :
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                                placeholder="username" onChange={(e) => this.setState({ loginUsername: e.target.value })}></input>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="exampleInputPassword1"
-                                placeholder="password"
-                                onChange={(e) => this.setState({ loginPassword: e.target.value })}></input>
-                        </div>
-                        <button type="button" onClick={login} class="btn btn-primary" href="#collapseExample">Login</button>
-                        <div class="collapse" id="collapseExample">
-                            <div class="card card-body">
-                                <p class="text-danger">Wrong Credentials!</p>
+                    (this.state.loggedIn == true ?
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                "Settings"
+                        </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <Link to="/"><button class="dropdown-item" type="button" onClick={logOut} href="#">Logout</button></Link>
+                                <Link to="/wishlist"> <a class="dropdown-item" href="#">Wishlist</a></Link>
+                                <Link to="/history"> <a class="dropdown-item" href="#">History</a></Link>
                             </div>
                         </div>
-                    </form>
+
+                        :
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                                    placeholder="username" onChange={(e) => this.setState({ loginUsername: e.target.value })}></input>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="exampleInputPassword1"
+                                    placeholder="password"
+                                    onChange={(e) => this.setState({ loginPassword: e.target.value })}></input>
+                            </div>
+                            <button type="button" onClick={login} class="btn btn-primary" href="#collapseExample">Login</button>
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+                                    <p class="text-danger">Wrong Credentials!</p>
+
+                                </div>
+                            </div>
+                        </form>)
                 }
 
             </nav>

@@ -1,3 +1,28 @@
+## (March 11th, 2021)
+### Added share buttons to search table
+* Added Twitter share button to post game deal page
+* Added Facebook share button to post game deal page
+* Added copy link to clipboard for the game deal page
+
+## (March 11th, 2021)
+### Added features for home page
+* Added a slide show for trending games
+* Added carousel sliders for games from all stores in CheapShark API
+* Made each carousel item clickable so that the user can view details/add to wishlist/go to the store page
+
+## (March 9th, 2021)
+### Added a sorting functionality to the wishlisted games.
+* Implemented changing of backend user information schema.
+* Implemented backend reques handling and code.
+* Add a clickable section over the sorting area in the frontend.
+* Displaying icon to show the direction (asc, desc) of sorting.
+
+## (March 7th, 2021)
+### Added like/dislike functionality to Game Details Component
+* Implemented backend code to like/unlike comments
+* Added buttons in the comments component
+* Successfully like/unlike comments and incremenet/decrement without refreshing the page
+
 ## (February 22nd, 2021)
 ### Added Recent View Game List
 * Changed the Top Viewed games component to also show a recent viewed games.

@@ -12,7 +12,12 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+.aaa{
+  background-color: inherit;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -84,6 +89,70 @@ h1 {
   margin-top: 100px;
   margin-left: 25%;
   margin-right: 25%;
+}
+
+.btn-circle {
+  background-color: whitesmoke !important;
+  width: 30px;
+  height: 30px;
+  padding: 2px !important;
+  border-radius: 50% !important;
+}
+
+.share-cell {
+  display: flex !important;
+}
+
+.img-wrapper {
+  position: relative;
+  
+  text-align: center;
+}
+
+.img-responsive {
+  width: 100%;
+  height: auto;
+}
+
+.img-overlay {
+  position: absolute;
+  top: 20;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.img-overlay:before {
+  content: ' ';
+  display: block;
+  /* adjust 'height' to position overlay content vertically */
+  height: 50%;
+}
+
+.netflix-container {
+  display: flex;
+  padding: 0 55px;
+}
+
+.netflix-item {
+  background: green;
+  flex: 0 0 19.7%;
+  text-align: center;
+  margin: 0 2px;
+  transition: transform 300ms ease 100ms;
+}
+
+.netflix-container:hover .netflix-item {
+  transform: translateX(-25%);
+}
+
+.netflix-item:hover ~ .netflix-item {
+  transform: translateX(25%);
+}
+
+.netflix-item:hover {
+  transform: scale(1.5) !important;
 }
 
 @keyframes App-logo-spin {
