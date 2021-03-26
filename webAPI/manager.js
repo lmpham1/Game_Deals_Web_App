@@ -724,7 +724,6 @@ module.exports = function() {
                 })
             }
         )},
-<<<<<<< HEAD
         
         likeComment: function(commentId, gameId, userId) {
             let found = false;
@@ -932,10 +931,8 @@ module.exports = function() {
                 })
             })
         }
-=======
 
     
->>>>>>> master
     }
 
     
