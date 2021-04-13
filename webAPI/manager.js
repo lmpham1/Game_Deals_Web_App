@@ -16,7 +16,7 @@ const usersSchema = require('./schema-users');
 const gamesSchema = require('./schema-games');
 
 class Wishlist {
-    constructor(storeID, gameID, name, salePrice, retailPrice, releaseDate, thumb, priceToBeNotified = null) {
+    constructor(storeID, gameID, name, salePrice, retailPrice, releaseDate, thumb, priceToBeNotified = null, date = new Date()) {
         this.storeID = storeID;
         this.gameID = gameID;
         this.name = name;
