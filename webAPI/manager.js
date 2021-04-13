@@ -603,6 +603,12 @@ module.exports = function() {
                                 reject("No game has been found");
                             }
                             else {
+                                if(result.views){
+                                    result.views++;
+                                }
+                                else{
+                                    result.views = 1;
+                                }
                                 //body["date"] = new Date().setTime(0,0,0); 
                                 console.log(result)
                                 console.log(new Date(body["date"]))
