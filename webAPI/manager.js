@@ -931,7 +931,7 @@ module.exports = function() {
 
                 })
             })
-        }
+        },
 
         likeComment: function(commentId, gameId, userId) {
             let found = false;
