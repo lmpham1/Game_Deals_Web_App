@@ -29,6 +29,7 @@ class Wishlist extends React.Component {
         }
         this.handleSwitch = this.handleSwitch.bind(this);
         this.handleSort = this.handleSort.bind(this);
+        this.handleSort = this.handleSort.bind(this);
     }
 
 
@@ -68,7 +69,7 @@ class Wishlist extends React.Component {
     }
 
     handleSort(e) {
-        let temp = this.state.wishlistedGames;
+      /*  let temp = this.state.wishlistedGames;
 
         this.setState({ sortIcon: true })
         if (this.state.sorting) {
@@ -78,6 +79,19 @@ class Wishlist extends React.Component {
             console.log("he")
         } else {
             temp.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+            this.setState({ sorting: true })
+            this.setState({ wishlistedGames: temp })
+        }*/
+        let temp = this.state.wishlistedGames;
+
+        this.setState({ sortIcon: true })
+        if (this.state.sorting) {
+            temp.sort((a, b) => (a.date < b.date) ? 1 : ((b.date < a.date) ? -1 : 0))
+            this.setState({ sorting: false })
+            this.setState({ wishlistedGames: temp })
+            console.log("he")
+        } else {
+            temp.sort((a, b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
             this.setState({ sorting: true })
             this.setState({ wishlistedGames: temp })
         }
@@ -282,7 +296,7 @@ const DeleteAlert = (gameID, userID, email) => {
 }
 
 const TableHeader = (props) => {
-    var s;
+    /*var s;
     if(props.sorting){
         s= <th class="aaa" onClick={() => props.handleSort(props)}>Icon  <FaCaretDown/> </th>
     }else{
@@ -297,6 +311,28 @@ const TableHeader = (props) => {
                }
                 <th>Game Title</th>
                 <th>Current Price</th>
+                <th>Alert Price</th>
+                <th>Notification</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+    )*/
+    var s;
+    if(props.sorting){
+        s= <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaCaretDown/> </th>
+    }else{
+        s =<th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaCaretUp/> </th>
+    }
+    return (
+        <thead>
+            <tr>
+               <th>Icon </th>               
+                <th>Game Title</th>
+                <th>Current Price</th>
+                { props.sortIcon == false ? <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaGripLines/> </th>               
+               :
+               (s)
+               }
                 <th>Alert Price</th>
                 <th>Notification</th>
                 <th>Remove</th>
@@ -360,12 +396,15 @@ const TableRow = (props) => {
         setValue(newValue);
         props.handleSwitch(!props.item.notifSwitch, props.item.gameID, props.userId, props.email);
     }
-
+    if(props.item.date){
+        var dateString = props.item.date.substring(0,10)
+    }
     return (
         <tr>
             <td><Link to={`/game-detail/${props.item.gameID}`}><img class="storeImg" src={props.item.thumb} alt="Responsive image" width={50} height={50} /></Link></td>
             <td><Link to={`/game-detail/${props.item.gameID}`}>{props.item.name}</Link></td>
             <td>${props.item.salePrice}</td>
+            <td>{props.item.date ? dateString : "No Date"}</td>
             <td>{props.item.priceToBeNotified == null ? "None Set" : "$" + props.item.priceToBeNotified}</td>
 
             <td>
