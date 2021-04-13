@@ -100,6 +100,18 @@ export const GlobalStyles = createGlobalStyle`
     color: ${({ theme }) => theme.text};
     background-color: ${({ theme }) => theme.body}
   }
+
+  .card-body {
+    background-color:${({ theme }) => theme.gameDetail} 
+  }
+
+  .comment-theme{
+    color: ${({ theme }) => theme.text};
+    background-color:${({ theme }) => theme.body} 
+
+  }
+
+  .
   `;
 
   export default GlobalStyles;

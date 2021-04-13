@@ -422,7 +422,7 @@ const SingleCommentView = (props) => {
         src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/263F418F2C47943D98B2877ECAD174927FBBD359C4AFB45BE0C6A22AD589D22E/scale?width=300&aspectRatio=1&format=png"
         alt="Image Description"
       />
-      <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+      <div class="comment-theme media-body u-shadow-v18 g-bg-secondary g-pa-30">
         <div class="g-mb-15">
           <h5 class="h5 g-color-gray-dark-v1 mb-0">{props.item.userFName} {props.item.userLName}</h5>
           <span class="g-color-gray-dark-v4 g-font-size-12">{timeAgo.format(date)}</span>
