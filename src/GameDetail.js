@@ -94,9 +94,9 @@ class GameDetail extends React.Component {
 
     let hasSteamID = false;
     fetch(`http://localhost:8080/api/game/${this.props.id}`)
-      .then(res => {
-        if (res.ok) {
-          return res.json();
+    .then(res => {
+      if (res.ok) {
+        return res.json();
         }
         else if (res.status === 404) {
           throw Error("HTTP 404, Not Found");
@@ -112,16 +112,37 @@ class GameDetail extends React.Component {
           isEmpty: false,
           comments: json["0"]
         })
-        console.log("newGame");
-        console.log(json["0"]);
+        if (this.state.loggedIn) {
+          var userId = this.state.userId._id;
+          var c = this.state.comments;
+          for (let i = 0; i < c.comments.length; i++) {
+            let likeBtn = document.getElementById(`like${i}`);
+            console.log("HERE")
+            for (let j = 0; j < c.comments[i].userLikes.length; j++) {
+              if (userId == c.comments[i].userLikes[j]) {
+                likeBtn.classList.add("btnColour");
+              }
+            }
+          }
+          
+          for (let i = 0; i < c.comments.length; i++) {
+            let dislikeBtn = document.getElementById(`dislike${i}`);
+            for (let j = 0; j < c.comments[i].userDislikes.length; j++) {
+              if (userId == c.comments[i].userDislikes[j]) {
+                dislikeBtn.classList.add("btnColour");
+              }
+            }
+          }
+        }
+
         if (json.info.steamAppID != null) {
           hasSteamID = true;
           this.setState({ thumbnail: `https://steamcdn-a.akamaihd.net/steam/apps/${json.info.steamAppID}/header.jpg?t=1602601042` })
         }
         fetch(`https://agile-sands-96303.herokuapp.com/api/search/${json.info.title}`) // fetch info w deals
-          .then(res => {
-            if (res.ok) {
-              return res.json();
+        .then(res => {
+          if (res.ok) {
+            return res.json();
             }
             else if (res.status === 404) {
               throw Error("HTTP 404, Not Found");
@@ -220,7 +241,8 @@ class GameDetail extends React.Component {
     const forceUpdate = () => {
       this.setState(this.state);
       this.forceUpdate();
-  }
+    }
+    console.log(this.state);
     var { isLoaded, items } = this.state;
     if (!isLoaded) {
       return (
@@ -252,12 +274,14 @@ class GameDetail extends React.Component {
         })
           .then(data => data.json())
           .then(res => console.log(res));
-      }
-
-      if (this.state.loggedIn) {
-        let len = `(${this.state.comments.comments.length})`;
-        return (
-          <div>
+        }
+        
+        if (this.state.userId != null) {
+          console.log(this.state.userId);
+          let len = `(${this.state.comments.comments.length})`;
+          //<span class = "float-right"><SortComments forceUpdate = {forceUpdate} comments = {this.state.comments.comments} /></span>
+          return (
+            <div>
             <DisplayInfo userId={this.state.userId} gameInfo={this.state.gameInformation} cheapestDealEmpty={this.state.cheapestDealEmpty} items={this.state.items} thumbnail={this.state.thumbnail} />
             <hr class="line"></hr>
             <hr class="line"></hr>
@@ -272,11 +296,10 @@ class GameDetail extends React.Component {
                   class="form-control" 
                   rows="2"
                   maxLength = "280"
-                />
+                  />
                 <p class = "pull-right"><strong>Word Count:</strong> {this.state.commentInput.length}/280</p>
                 <div class = "submitForm">
                 <button disabled={this.state.commentInput == ''} class="btn btn-primary btn-lg" id = "submitBtn" role="button">Submit</button>
-                <button onClick = {"this.setState({commentInput: ''});"} class="btn btn-secondary btn-lg">Cancel</button>
                 </div>
               </div>
             </form>
@@ -284,7 +307,9 @@ class GameDetail extends React.Component {
           </div>
         );
       }
+      //<button onClick = {"this.setState({commentInput: ''});"} class="btn btn-secondary btn-lg">Cancel</button>
       else {
+        console.log(items);
         return (
           <div>
             <DisplayInfo userId={this.state.userId} gameInfo={this.state.gameInformation} cheapestDealEmpty={this.state.cheapestDealEmpty} items={this.state.items} thumbnail={this.state.thumbnail} />
@@ -295,7 +320,7 @@ class GameDetail extends React.Component {
             <div>
               <h5><i>Log in to comment</i></h5>
             </div>
-            <DisplayComments userId = {this.state.userId} forceUpdate = {forceUpdate} gameId = {this.state.comments._id} comments={this.state.comments.comments}/>
+            <DisplayComments forceUpdate = {forceUpdate} gameId = {this.state.comments._id} comments={this.state.comments.comments}/>
           </div>
         );
       
@@ -304,6 +329,55 @@ class GameDetail extends React.Component {
   }
 }
 
+const SortComments = (props) => {
+
+  const sortComment = (forceUpdate, comments, type) => {
+    function newest(a,b) {
+      if (a.date > b.date) {
+        return -1;
+      }
+      if (a.date < b.date) {
+        return 1;
+      }
+      return 0;
+    }
+    function oldest(a,b) {
+      if (a.date < b.date) {
+        return -1;
+      }
+      if (a.date > b.date) {
+        return 1;
+      }
+      return 0;
+    }
+    function topLikes(a,b) {
+      if (a.upVote > b.upVote) {
+        return -1;
+      }
+      if (a.upVote < b.upVote) {
+        return 1;
+      }
+      return 0;
+    }
+
+    if (type == "topLikes") comments.sort(topLikes);
+    else if (type == "newest") comments.sort(newest);
+    else if (type == "oldest") comments.sort(oldest);
+    forceUpdate();
+  }
+  return (
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Sort by
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item" onClick={() => sortComment(props.forceUpdate, props.comments, "topLikes")}>Most Likes</a>
+      <a class="dropdown-item" onClick={() => sortComment(props.forceUpdate, props.comments, "newest")}>Newest</a>
+      <a class="dropdown-item" onClick={() => sortComment(props.forceUpdate, props.comments, "oldest")}>Oldest</a>
+    </div>
+  </div>
+  )
+}
 const DisplayComments = (props) => {
   const removeRow = (idx, arr, forceUpdate) => {
     let removedComment = arr.splice(idx, 1);
@@ -355,6 +429,7 @@ const SingleCommentView = (props) => {
         </div>
         <p id = "commentTxt">{props.item.comment}</p>
         <ul class="list-inline d-sm-flex my-0">
+          <LikeButton props = {props.item} index = {props.index} gameId = {props.gameId} userId = {props.userId} forceUpdate = {props.forceUpdate} />
           {props.userId == props.item.userId && <li class="list-inline-item ml-auto">
             <a onClick={() => props.removeComment(props.gameId, props.item._id, props.index, props.comments, props.forceUpdate)} role="button" class="text-muted">Remove</a>
           </li>}
@@ -363,30 +438,179 @@ const SingleCommentView = (props) => {
     </div>
   );
 }
-/*
-<div class="media g-mb-30 media-comment">
-            <img
-              class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15"
-              src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/263F418F2C47943D98B2877ECAD174927FBBD359C4AFB45BE0C6A22AD589D22E/scale?width=300&aspectRatio=1&format=png"
-              alt="Image Description"
-            />
-            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
-              <div class="g-mb-15">
-                <h5 class="h5 g-color-gray-dark-v1 mb-0">John Doe</h5>
-                <span class="g-color-gray-dark-v4 g-font-size-12">
-                  5 days ago
-                </span>
-              </div>
-              <p>Great game! I enjoyed playing GTA since I was a kid.</p>
-              <ul class="list-inline d-sm-flex my-0">
-                <li class="list-inline-item ml-auto">
-                  <a class="text-muted">Remove</a>
-                </li>
-              </ul>
-            </div>
-          </div>
- */
-// <DisplayGameInfoTable items = {this.state.items} stores = {this.state.stores} />
+
+const LikeButton = (props) => {
+  const updateLikeState = (type, item, userId, forceUpdate, index) => {
+    if (type == true) {
+      item.userLikes.push(userId);
+      ++item.upVote;
+      forceUpdate();
+    }
+    else {
+      item.userLikes.splice(index, 1);
+      if (item.upVote <= 0) {
+        item.upVote = 0;
+      }
+      else {
+        --item.upVote;
+      }
+      forceUpdate();
+    }
+  }
+
+  const updateDislikeState = (type, item, userId, forceUpdate, index) => {
+    if (type == true) {
+      item.userDislikes.push(userId);
+      ++item.downVote;
+      forceUpdate();
+    }
+    else {
+      item.userDislikes.splice(index, 1);
+      if (item.downVote <= 0) {
+        item.downVote = 0;
+      }
+      else {
+        --item.downVote;
+      }      
+      forceUpdate();
+    }
+  }
+  const likeAPI = (comment, gameId, userId, forceUpdate, index) => {
+    fetch(`http://localhost:8080/api/likeComment?commentId=${comment._id}&gameId=${gameId}&userId=${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(props)
+    })
+      .then(data => data.json())
+      .then(res => {
+        if (!res.message) {
+          updateLikeState(true, comment, userId, forceUpdate, index)
+        }
+      });
+  }
+
+  const unlikeAPI = (comment, gameId, userId, forceUpdate, index) => {
+    fetch(`http://localhost:8080/api/unLikeComment?commentId=${comment._id}&gameId=${gameId}&userId=${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(props)
+    })
+      .then(data => data.json())
+      .then(res => {
+        if (!res.message) {
+          updateLikeState(false, comment, userId, forceUpdate, index)
+        }
+      });
+  }
+
+  const dislikeAPI = (comment, gameId, userId, forceUpdate, index) => {
+    fetch(`http://localhost:8080/api/dislikeComment?commentId=${comment._id}&gameId=${gameId}&userId=${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(props)
+    })
+      .then(data => data.json())
+      .then(res => {
+        if (!res.message) {
+          updateDislikeState(true, comment, userId, forceUpdate, index)
+        }
+      });
+  }
+
+  const unDislikeAPI = (comment, gameId, userId, forceUpdate, index) => {
+    fetch(`http://localhost:8080/api/unDislikeComment?commentId=${comment._id}&gameId=${gameId}&userId=${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(props)
+    })
+      .then(data => data.json())
+      .then(res => {
+        if (!res.message) {
+          updateDislikeState(false, comment, userId, forceUpdate, index)
+        }
+      });
+  }
+
+  
+  const like = (index, comment, gameId, userId, forceUpdate) => {
+    if (userId == null) {
+      const notifyRemoved = () => {
+        toast.error(`Please login to like/dislike a comment`);
+      }
+      notifyRemoved();
+    }
+    else {
+      let likeBtn = document.getElementById(`like${index}`);
+      let dislikeBtn = document.getElementById(`dislike${index}`);
+  
+      //if liked / unlike
+      if (likeBtn.classList.contains("btnColour")) {
+        unlikeAPI(comment, gameId, userId, forceUpdate, index);
+        likeBtn.classList.remove("btnColour");
+      }
+      else {
+        if (dislikeBtn.classList.contains("btnColour")) {
+          unDislikeAPI(comment, gameId, userId, forceUpdate, index);
+          dislikeBtn.classList.remove("btnColour");
+        }
+        likeAPI(comment, gameId, userId, forceUpdate, index);
+        likeBtn.classList.add("btnColour");
+      }
+    }
+  }
+
+  const dislike = (index, comment, gameId, userId, forceUpdate) => {
+    if (userId == null) {
+      const notifyRemoved = () => {
+        toast.error(`Please login to like/dislike a comment`);
+      }
+      notifyRemoved();
+    }
+    else {
+      let likeBtn = document.getElementById(`like${index}`);
+      let dislikeBtn = document.getElementById(`dislike${index}`);
+  
+      if (dislikeBtn.classList.contains("btnColour")) {
+        unDislikeAPI(comment, gameId, userId, forceUpdate, index);
+        dislikeBtn.classList.remove("btnColour");
+      }
+      else {
+        if (likeBtn.classList.contains("btnColour")) {
+          unlikeAPI(comment, gameId, userId, forceUpdate, index);
+          likeBtn.classList.remove("btnColour");
+        }
+        dislikeAPI(comment, gameId, userId, forceUpdate, index);
+        dislikeBtn.classList.add("btnColour");
+      }
+    }
+  }
+
+  let likeStr = `like${props.index}`;
+  let dislikeStr = `dislike${props.index}`;
+  return (
+    <div>
+      <li class="list-inline-item g-mr-20">
+        <a onClick={() => like(props.index, props.props, props.gameId, props.userId, props.forceUpdate)} id = "likeColour" class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover">
+          <i id = {likeStr} class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3">{props.props.upVote}</i>
+        </a>
+      </li>
+      <li class="list-inline-item g-mr-20">
+        <a onClick={() => dislike(props.index, props.props, props.gameId, props.userId, props.forceUpdate)}id = "likeColour" class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover">
+          <i id = {dislikeStr}  class="fa fa-thumbs-down g-pos-rel g-top-1 g-mr-3">{props.props.downVote}</i>
+        </a>
+      </li>
+    </div>
+  )
+}
+
 const DisplayInfo = (props) => {
   let gameInfo = props.gameInfo
   console.log(props.gameInfo);
@@ -422,7 +646,7 @@ const DisplayInfo = (props) => {
           <div class="card">
             <img class="card-img-top banner" src={props.thumbnail} alt="Responsive image"></img>
             <div class="card-body">
-              <h3>{props.items.info.title} <span data-toggle="tooltop" data-placement="right" title="Add game to wishlist"> <i value={props.gameInfo} onClick={() => AddRemoveGame(props.gameInfo, props.userId)} class="fa fa-heart-o" id="heart" aria-hidden="true"></i> </span></h3>
+            <h3><strong>{props.items.info.title}</strong> <span data-toggle="tooltop" data-placement="right" title="Add game to wishlist"> <i value={props.gameInfo} onClick={() => AddRemoveGame(props.gameInfo, props.userId)} class="fa fa-heart-o" id="heart" aria-hidden="true"></i> </span></h3>
             </div>
           </div>
         </div>
@@ -486,7 +710,6 @@ const DisplayInfo = (props) => {
 }
 
 const AddRemoveGame = (props, userId) => {
-  console.log("INSIDE ADDREMOVEGAME ELSE" + userId)
   var heart = document.getElementById("heart");
 
   const notifyAdd = () => {
@@ -495,8 +718,11 @@ const AddRemoveGame = (props, userId) => {
   const notifyRemoved = () => {
     toast.error(`Game has been removed from your wishlist.`);
   }
-  if (userId == "") {
-
+  const errorToast = () => {
+    toast.error(`Please login to add game to wishlist`);
+  }
+  if (userId == null) {
+    errorToast();
   }
   else {
     if (heart.classList.contains("fa-heart")) { // filled

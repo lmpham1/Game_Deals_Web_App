@@ -189,6 +189,46 @@ app.put('/api/removeComment/:gameId/:commentId', (req, res) => {
   })
 })
 
+app.put('/api/likeComment', (req, res) => {
+  m.likeComment(req.query.commentId, req.query.gameId, req.query.userId)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.put('/api/unLikeComment', (req, res) => {
+  m.unlikeComment(req.query.commentId, req.query.gameId, req.query.userId)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.put('/api/dislikeComment', (req, res) => {
+  m.dislikeComment(req.query.commentId, req.query.gameId, req.query.userId)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
+app.put('/api/unDislikeComment', (req, res) => {
+  m.unDislikeComment(req.query.commentId, req.query.gameId, req.query.userId)
+  .then((data) => {
+    res.status(201).json(data);
+  })
+  .catch((error) => {
+  res.status(500).json({ "message": error });
+  })
+})
+
 app.put('/api/removeGame/:id', (req, res) => {
   m.removeGame(req.params.id, req.body)
   .then((data) => {

@@ -62,8 +62,16 @@ code {
 }
 */
 
+.btnColour {
+  color: blue;
+}
+
 .submitBtn {
   margin-bottom: 20px;
+}
+
+#likeColour:hover{
+  text-decoration: none;
 }
 
 .submitForm {
