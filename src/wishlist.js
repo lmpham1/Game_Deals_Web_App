@@ -4,8 +4,8 @@ import Axios from 'axios';
 import { withAlert } from 'react-alert';
 import Switch from "react-switch";
 import { FaGithub, FaCaretUp, FaGripLines, FaCaretDown } from "react-icons/fa";
-import {toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';import './App.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; import './App.css';
 import './App.css';
 
 class Wishlist extends React.Component {
@@ -33,9 +33,9 @@ class Wishlist extends React.Component {
     }
 
 
-    handleSwitch(checked, gameID, userID, email) {
+    handleSwitch(checked, gameID, userID, email, index) {
         console.log(checked);
-        this.setState({switch: checked});
+        this.setState({ switch: checked });
         //Updates database 
         fetch(`http://localhost:8080/api/updateNotif/${userID}/${checked}`, {
             method: 'PUT',
@@ -45,57 +45,56 @@ class Wishlist extends React.Component {
             body: JSON.stringify({ gameID: gameID })
         }).then(res => console.log(res))
             .catch(error => { console.log(error) });
-            
-            if (checked == true) {
-                var inputPrice = prompt("Enter alert price");
 
-                //Create alert
-                 CreateAlert(gameID, userID, email, inputPrice);
-                this.setState({alertPrice: inputPrice});
+        if (checked == true) {
+            var inputPrice = prompt("Enter alert price");
 
-                //Notifcation
-                toast.success(
-                    <div className="media">
-                        <p className="media-body">Notification created</p>
-                    </div>);
-            }
-            else {
-                DeleteAlert(gameID, userID, email);
-                toast.error(
-                    <div className="media">
-                        <p className="media-body">Notification deleted</p>
-                    </div>);
-            }
+            //Create alert
+            CreateAlert(gameID, userID, email, inputPrice);
+            this.setState({ alertPrice: inputPrice });
+
+            //Notifcation
+            toast.success(
+                <div className="media">
+                    <p className="media-body">Notification created</p>
+                </div>);
+            console.log("hereeeeeeeee")
+            console.log(index)
+            var temporary = this.state.wishlistedGames;
+            temporary[index].notifSwitch = true;
+            temporary[index].priceToBeNotified = inputPrice;
+            this.setState({ wishlistedGames: temporary });
+        }
+        else {
+            DeleteAlert(gameID, userID, email);
+            toast.error(
+                <div className="media">
+                    <p className="media-body">Notification deleted</p>
+                </div>);
+            var temporary = this.state.wishlistedGames;
+            temporary[index].notifSwitch = false;
+            temporary[index].priceToBeNotified = null;
+            this.setState({ wishlistedGames: temporary });
+        }
     }
 
     handleSort(e) {
-      /*  let temp = this.state.wishlistedGames;
-
-        this.setState({ sortIcon: true })
-        if (this.state.sorting) {
-            temp.sort((a, b) => (a.name < b.name) ? 1 : ((b.name < a.name) ? -1 : 0))
-            this.setState({ sorting: false })
-            this.setState({ wishlistedGames: temp })
-            console.log("he")
-        } else {
-            temp.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
-            this.setState({ sorting: true })
-            this.setState({ wishlistedGames: temp })
-        }*/
         let temp = this.state.wishlistedGames;
 
         this.setState({ sortIcon: true })
         if (this.state.sorting) {
             temp.sort((a, b) => (a.date < b.date) ? 1 : ((b.date < a.date) ? -1 : 0))
-            this.setState({ sorting: false })
             this.setState({ wishlistedGames: temp })
+            this.setState({ sorting: false })
             console.log("he")
         } else {
             temp.sort((a, b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
-            this.setState({ sorting: true })
             this.setState({ wishlistedGames: temp })
-        }
+            this.setState({ sorting: true })
 
+        }
+        console.log("here")
+        console.log(this.state.wishlistedGames)
 
     }
 
@@ -208,7 +207,7 @@ class Wishlist extends React.Component {
         if (this.state.isLoaded) {
             return (
                 <div>
-                    <DisplayWhislist sorting={this.state.sorting} sortIcon={this.state.sortIcon} handleSort = {this.handleSort} handleSwitch={this.handleSwitch} forceUpdate={forceUpdate} wishlist={this.state.wishlistedGames} loggedIn={this.props.loggedIn} prices={this.state.gameDeals} userId={this.state.userId} rrows={this.state.rrows} email={this.state.email} alert={this.props.alert} switch={this.state.switch} />
+                    <DisplayWhislist sorting={this.state.sorting} sortIcon={this.state.sortIcon} handleSort={this.handleSort} handleSwitch={this.handleSwitch} forceUpdate={forceUpdate} wishlist={this.state.wishlistedGames} loggedIn={this.props.loggedIn} prices={this.state.gameDeals} userId={this.state.userId} rrows={this.state.rrows} email={this.state.email} alert={this.props.alert} switch={this.state.switch} />
                 </div>
 
             );
@@ -318,21 +317,21 @@ const TableHeader = (props) => {
         </thead>
     )*/
     var s;
-    if(props.sorting){
-        s= <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaCaretDown/> </th>
-    }else{
-        s =<th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaCaretUp/> </th>
+    if (props.sorting) {
+        s = <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaCaretDown /> </th>
+    } else {
+        s = <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaCaretUp /> </th>
     }
     return (
         <thead>
             <tr>
-               <th>Icon </th>               
+                <th>Icon </th>
                 <th>Game Title</th>
                 <th>Current Price</th>
-                { props.sortIcon == false ? <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaGripLines/> </th>               
-               :
-               (s)
-               }
+                {props.sortIcon == false ? <th class="aaa" onClick={() => props.handleSort(props)}>Date Added <FaGripLines /> </th>
+                    :
+                    (s)
+                }
                 <th>Alert Price</th>
                 <th>Notification</th>
                 <th>Remove</th>
@@ -389,15 +388,9 @@ const TableBody = (props) => {
 }
 
 const TableRow = (props) => {
-    console.log(props.item);
-    console.log(props.item.priceToBeNotifed);
-    const [value, setValue] = React.useState(props.item.notifSwitch);
-    const handleSwitch = (newValue, event) => {
-        setValue(newValue);
-        props.handleSwitch(!props.item.notifSwitch, props.item.gameID, props.userId, props.email);
-    }
-    if(props.item.date){
-        var dateString = props.item.date.substring(0,10)
+
+    if (props.item.date) {
+        var dateString = props.item.date.substring(0, 10)
     }
     return (
         <tr>
@@ -408,7 +401,7 @@ const TableRow = (props) => {
             <td>{props.item.priceToBeNotified == null ? "None Set" : "$" + props.item.priceToBeNotified}</td>
 
             <td>
-                {<Switch onChange={handleSwitch} checked={value} />}
+                {<Switch onChange={() => props.handleSwitch(!props.item.notifSwitch, props.item.gameID, props.userId, props.email, props.index)} checked={props.item.notifSwitch} />}
             </td>
 
             <td><button type="button" onClick={() => props.removeGame(props.item, props.userId)} class="btn btn-danger" href="#collapseExample">Remove from List</button></td>
